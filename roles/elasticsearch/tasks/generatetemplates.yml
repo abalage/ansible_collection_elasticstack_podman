@@ -1,0 +1,22 @@
+---
+
+# FIXME check owner and group
+- name: Generate elasticsearch.yml for node
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ elastic_config }}/config/{{ item }}"
+    mode: "0644"
+    group: "1000"
+    owner: "1000"
+  loop:
+    - elasticsearch.yml
+
+- name: "Place elasticsearch logging config into the config directory"
+  copy:
+    src: "{{ item }}"
+    dest: "{{ elastic_config }}/config/{{ item }}"
+    mode: "0644"
+    owner: "1000"
+    group: "1000"
+  loop:
+    - log4j2.properties

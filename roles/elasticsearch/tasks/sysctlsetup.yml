@@ -1,0 +1,17 @@
+---
+- name: Adding sysctl config
+  template:
+    src: "sysctl.j2"
+    dest: "/etc/sysctl.d/elastic.conf"
+
+- name: Reloading sysctl
+  shell: sysctl -p /etc/sysctl.d/elastic.conf
+
+# - name: Set max map count
+#   sysctl:
+#     name: vm.max_map_count
+#     value: '{{ max_map_count }}'
+#     state: present
+#     sysctl_set: yes
+#     sysctl_file: "/etc/sysctl.d/elastic.conf"
+#     reload: yes

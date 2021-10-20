@@ -1,0 +1,13 @@
+---
+
+- name: Copy the certificates for Metricbeat
+  copy:
+    content: "{{ item.source }}"
+    dest: "{{ metricbeat_config }}/certs/{{ item.file }}"
+    mode: "0440"
+    owner: "1000"
+    group: "1000"
+  loop:
+    - file: cluster_ca.crt
+      source: "{{ cluster_ca_crt }}"
+  no_log: true

@@ -1,0 +1,89 @@
+---
+- name: Deploy Elasticsearch in a pod
+  vars:
+    pod_name: "{{ elastic_pod_name }}.{{inventory_hostname_short}}.es_{{ elastic.instance_name }}"
+  block:
+    - name: Create pod for elasticsearch
+      containers.podman.podman_pod:
+        name: "{{ pod_name }}"
+        hostname: "{{inventory_hostname_short}}.es_{{ elastic.instance_name }}"
+        state: "{{ state }}"
+        recreate: "{{ recreate }}"
+        network: "{{elastic_pod_network}}"
+        expose: "{{ elastic.ports }}"
+      when: elastic_pod_network != "bridge"
+
+    - name: Create pod for elasticsearch
+      containers.podman.podman_pod:
+        name: "{{ pod_name }}"
+        hostname: "{{inventory_hostname_short}}.es_{{ elastic.instance_name }}"
+        state: "{{ state }}"
+        recreate: "{{ recreate }}"
+        network: "{{ elastic_pod_network }}"
+        publish:
+          - "{{ service_ip}}:{{ elastic_ports[0] }}:{{ elastic_ports[0] }}"
+          - "{{ service_ip}}:{{ elastic_ports[1] }}:{{ elastic_ports[1] }}"
+      when: elastic_pod_network == "bridge"
+
+    - name: Run Elastic container
+      podman_container:
+        name: "{{inventory_hostname_short}}.es_{{ elastic.instance_name }}"
+        pod: "{{ pod_name }}"
+        image: {{ elastic_image }}:{{ elastic_version }}
+        state: started
+        stop_timeout: 90
+        recreate: "{{ recreate }}"
+## by default log4j2.properties is used plus filebeat
+## log driver k8s-file
+#        log_driver: k8s-file
+#        log_opt:
+#          path: "{{ elastic_data }}/logs/elasticsearch-container.log"
+#          max_size: 300mb
+## log driver to journald (where syslog-ng can pick-up)
+#        log_driver: journald
+#        log_opt:
+#          tag=elastic|{{ '{{' }}.ImageName{{ '}}' }}|podman
+        label:
+          process: elasticsearch
+        ulimit:
+          - "memlock=-1:-1"
+        memory: "{{elastic.memory_limit}}"
+        cpus: "{{elastic.cpu_limit}}"
+        env:
+          TZ: "{{timezone}}"
+          ES_HEAP_SIZE: "{{elastic.heap_size}}"
+          ES_JAVA_OPTS: "{{elastic.java_opts}}"
+          ELASTIC_PASSWORD: "{{elastic_password}}"
+          HTTP_PROXY: "{{http_proxy}}"
+          HTTPS_PROXY: "{{https_proxy}}"
+        volume:
+          - "{{ elastic_data }}/logs:/usr/share/elasticsearch/logs:z"
+          - "{{ elastic_data }}/data:/usr/share/elasticsearch/data:z"
+          - "{{ elastic_data }}/snapshots:{{elastic_snapshot_repository}}"
+          - "{{ elastic_config }}/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,z"
+          - "{{ elastic_config }}/config/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties:ro,z"
+          - "{{ elastic_config }}/certs/ca.crt:/usr/share/elasticsearch/config/certificates/ca.crt:ro,z"
+          - "{{ elastic_config }}/certs/instance.crt:/usr/share/elasticsearch/config/certificates/instance.crt:ro,z"
+          - "{{ elastic_config }}/certs/instance.key:/usr/share/elasticsearch/config/certificates/instance.key:ro,z"
+      register: result
+      until: result is success
+      retries: 3
+      delay: 5
+      environment: "{{ proxy_env }}"
+
+    - name: Open up firewalld ports
+      firewalld:
+        port: "{{ item }}/tcp"
+        permanent: yes
+        immediate: yes
+        state: enabled
+        zone: "{{ firewalld_zone }}"
+      loop: "{{ elastic.ports }}"
+      when: elastic_pod_network == "host"
+
+    - name: Hand over pod and container mgmt to systemd
+      vars:
+        container_name: "{{ pod_name }}"
+        type: pod
+      import_role:
+        name: podman_systemd_simple

@@ -1,0 +1,130 @@
+---
+# defaults file for elasticsearch
+state: "started"
+recreate: "no"
+firewalld_zone: "public"
+timezone: "Europe/Budapest"
+
+# persistent directories
+elastic_config: "{{ container_conf_dir }}/{{inventory_hostname_short}}.es_{{elastic.instance_name}}"
+elastic_data: "{{ container_data_dir }}/{{inventory_hostname_short}}.es_{{elastic.instance_name}}"
+elastic_snapshot_repository: "/mnt/snapshot-repository"
+
+# container or pod networking
+elastic_pod_name: "elasticsearch"
+elastic_pod_network: "host"
+
+# container defaults
+elastic_image: "docker.elastic.co/elasticsearch/elasticsearch"
+elastic_version: "{{ elk_version | default(7.14.1)}}"
+
+elastic_cluster_name: "example.com"
+elastic_elastic_user: "elastic"
+elastic_password: "changeMe"
+
+# host specific variables, customisation should go to host_vars
+# FIXME the key-pairs should be kept even when they are not changed
+
+elastic:
+  hostname: localhost
+  instance_name: "master01"
+  nodetype: es_master
+  ports:
+    - "9200"
+    - "9300"
+  #deployment_type: "single-node"
+  noderoles:
+    - data
+    - master
+    - ingest
+    - transform
+    - remote_cluster_client
+  memory_limit: 6g
+  cpu_limit: 1
+  heap_size: "3g"
+  java_opts: "-Xms3g -Xmx3g"
+  ip_address: "{{service_ip}}"
+  rack_id: A1
+  server_room: B1
+
+# mappings for compatibility with official ansible playbook
+es_api_scheme: "http"
+es_api_host: "{{ elastic.ip_address }}"
+es_api_port: "{{ elastic_listen_ports[0] }}"
+es_api_uri: "{{ es_api_scheme }}://{{ es_api_host }}:{{ es_api_port }}"
+es_api_sleep: 15
+es_security_api: "_security"
+es_validate_certs: no
+es_api_basic_auth_username: "{{elastic_elastic_user}}"
+es_api_basic_auth_password: "{{elastic_elastic_password}}"
+es_delete_unmanaged_file: true
+es_delete_unmanaged_native: true
+
+# https://www.elastic.co/guide/en/beats/filebeat/7.15/privileges-to-setup-beats.html
+# https://www.elastic.co/guide/en/beats/filebeat/7.15/privileges-to-publish-events.html
+# https://www.elastic.co/guide/en/elasticsearch/reference/7.15/built-in-roles.html
+es_roles:
+  native:
+    filebeat_setup:
+      cluster:
+        - monitor
+        - manage_ilm
+        - manage_ml
+      indices:
+        - names: 'filebeat-*'
+          privileges:
+            - manage
+            - write
+            - read
+    filebeat_writer:
+      cluster:
+        - monitor
+        - read_ilm
+        - read_pipeline
+      indices:
+        - names: 'filebeat-*'
+          privileges:
+            - create_doc
+            - view_index_metadata
+            - create_index
+
+es_users:
+  native:
+    apm_system:
+      password: "{{ apm_system_password }}"
+    kibana_system:
+      password: "{{ kibana_system_password }}"
+    logstash_system:
+      password: "{{ logstash_system_password }}"
+    beats_system:
+      password: "{{ beats_system_password }}"
+      roles:
+        - beats_system
+    remote_monitoring_user:
+      password: "{{ remote_monitoring_user_password }}"
+    filebeat_publisher_user:
+      password: "{{ filebeat_publisher_user_password }}"
+      roles:
+        - filebeat_writer
+    filebeat_setup_user:
+      password: "{{ filebeat_setup_user_password }}"
+      roles:
+        - filebeat_setup
+        - kibana_admin
+        - ingest_admin
+        - machine_learning_admin
+        - beats_admin
+    filebeat_kibana_setup_user:
+      password: "{{ filebeat_kibana_setup_user_password }}"
+      roles:
+        - filebeat_setup
+        - kibana_admin
+
+apm_system_password: "changeMe"
+kibana_system_password: "changeMe"
+logstash_system_password: "changeMe"
+beats_system_password: "changeMe"
+remote_monitoring_user_password: "changeMe"
+filebeat_publisher_user_password: "changeMe"
+filebeat_setup_user_password: "changeMe"
+filebeat_kibana_setup_user_password: "changeMe"

@@ -1,0 +1,14 @@
+---
+
+- name: Create persistent directories for Kibana
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "1000"
+    group: "1000"
+    mode: '0755'
+    recurse: yes
+  loop:
+    - "{{kibana_config}}/config"
+    - "{{kibana_config}}/certs"
+    - "{{kibana_data}}/logs"

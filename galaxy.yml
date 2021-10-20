@@ -1,0 +1,19 @@
+namespace: "abalage"
+name: "elasticstack_podman"
+version: "1.0.0"
+readme: "README.md"
+authors:
+    - "Balázs NÉMETH (https://balagetech.com)"
+dependencies:
+    "containers.podman": ">=1.5.0"
+license:
+    - "Apache-2.0"
+tags:
+    - podman
+    - elasticsearch
+    - kibana
+    - metricbeat
+    - filebeat
+    - logstash
+    - collection
+repository: "https://www.github.com/abalage/ansible_collection_elasticstack_podman"

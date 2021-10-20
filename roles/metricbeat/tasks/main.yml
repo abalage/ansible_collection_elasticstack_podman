@@ -1,0 +1,18 @@
+---
+# tasks file for metricbeat
+
+- name: Import createdirs
+  include_tasks:
+    file: "createdirs.yml"
+    apply:
+      tags: create_dirs
+  tags: create_dirs
+
+- name: Import generatetemplates
+  include_tasks: "generatetemplates.yml"
+
+- name: Import synccerts
+  include_tasks: "synccerts.yml"
+
+- name: Import metricbeat_podman
+  include_tasks: "metricbeat_podman.yml"

@@ -1,0 +1,12 @@
+---
+
+- name: "Generating kibana config and placing into config directory"
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ kibana_config }}/config/{{ item }}"
+    mode: "0644"
+    owner: "1000"
+    group: "1000"
+  loop:
+    - kibana.yml
+  tags: security

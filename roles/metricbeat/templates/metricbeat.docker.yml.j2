@@ -1,0 +1,138 @@
+metricbeat.config:
+  modules:
+    path: ${path.config}/modules.d/*.yml
+    # Reload module configs as they change:
+    reload.enabled: false
+
+#metricbeat.autodiscover:
+#  providers:
+#    - type: docker
+#      hints.enabled: true
+
+metricbeat.modules:
+#- module: docker
+#  metricsets:
+#    - "container"
+#    - "cpu"
+#    - "diskio"
+#    - "healthcheck"
+#    - "info"
+#    #- "image"
+#    - "memory"
+#    - "network"
+#  hosts: ["unix:///var/run/docker.sock"]
+#  period: 10s
+#  enabled: true
+
+- module: elasticsearch
+  metricsets:
+    - node
+    - node_stats
+    - index
+    - index_recovery
+    - index_summary
+    - shard
+    - ml_job
+  period: 10s
+  hosts:
+{% for host in groups['elastic_master_nodes'] %}
+    - {{metricbeat.elastic_http_scheme}}://{{host}}:{{es_api_port}}
+{% endfor %}
+
+  username: "{{metricbeat.monitoring_read_user_name}}"
+  password: "{{metricbeat.monitoring_read_user_pass}}"
+  ssl.certificate_authorities: ["/etc/pki/root/ca.pem"]
+  ssl.verification_mode: "{{metricbeat.certificate_validation}}"
+
+  #index_recovery.active_only: true
+  xpack.enabled: true
+  scope: cluster
+
+- module: kibana
+  metricsets: ["stats", "status"]
+  period: 10s
+  hosts:
+{% for host in groups['kibana_hosts'] %}
+    - {{metricbeat.kibana_http_scheme}}://{{host}}:5601
+{% endfor %}
+  username: "{{metricbeat.monitoring_read_user_name}}"
+  password: "{{metricbeat.monitoring_read_user_pass}}"
+  basepath: ""
+  enabled: true
+  ssl.certificate_authorities: ["/etc/pki/root/ca.pem"]
+  ssl.verification_mode: "{{metricbeat.certificate_validation}}"
+
+  # Set to true to send data collected by module to X-Pack
+  # Monitoring instead of metricbeat-* indices.
+  xpack.enabled: true
+
+- module: logstash
+  metricsets: ["node", "node_stats"]
+  period: 10s
+  hosts:
+{% for host in groups['logstash_hosts'] %}
+    - {{metricbeat.logstash_http_scheme}}://{{host}}:9600
+    - {{metricbeat.logstash_http_scheme}}://{{host}}:9601
+{% endfor %}
+#  username: "{{metricbeat.monitoring_read_user_name}}"
+#  password: "{{metricbeat.monitoring_read_user_pass}}"
+  enabled: true
+  ssl.certificate_authorities: ["/etc/pki/root/ca.pem"]
+  ssl.verification_mode: "{{metricbeat.certificate_validation}}"
+
+  # Set to true to send data collected by module to X-Pack
+  # Monitoring instead of metricbeat-* indices.
+  xpack.enabled: true
+
+- module: beat
+  metricsets:
+    - stats
+    - state
+  period: 10s
+  hosts:
+{% for host in groups['filebeat_hosts'] %}
+    - {{metricbeat.beat_http_scheme}}://{{host}}:5066
+{% endfor %}
+  ssl.certificate_authorities: ["/etc/pki/root/ca.pem"]
+  ssl.verification_mode: "{{metricbeat.certificate_validation}}"
+  enabled: true
+  # Set to true to send data collected by module to X-Pack
+  # Monitoring instead of metricbeat-* indices.
+  xpack.enabled: true
+
+- module: beat
+  metricsets:
+    - stats
+    - state
+  period: 10s
+  hosts:
+{% for host in groups['metricbeat_hosts'] %}
+    - {{metricbeat.beat_http_scheme}}://{{host}}:5067
+{% endfor %}
+  ssl.certificate_authorities: ["/etc/pki/root/ca.pem"]
+  ssl.verification_mode: "{{metricbeat.certificate_validation}}"
+  enabled: true
+  # Set to true to send data collected by module to X-Pack
+  # Monitoring instead of metricbeat-* indices.
+  xpack.enabled: true
+
+processors:
+  - add_cloud_metadata: ~
+
+processors:
+  - add_tags:
+      tags: [{{metricbeat.source_cluster_name}}, production]
+      target: "environment"
+
+monitoring.cluster_uuid: "{{cluster_uuid}}"
+
+http.enabled: true
+http.host: 0.0.0.0
+http.port: "5067"
+
+output.elasticsearch:
+  hosts: '${ELASTICSEARCH_HOSTS:localhost:9200}'
+  username: '${ELASTICSEARCH_USERNAME:}'
+  password: '${ELASTICSEARCH_PASSWORD:}'
+  ssl.certificate_authorities: ["/etc/pki/root/ca.pem"]
+  ssl.verification_mode: "{{metricbeat.certificate_validation}}"

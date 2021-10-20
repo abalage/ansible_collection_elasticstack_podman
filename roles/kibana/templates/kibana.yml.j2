@@ -1,0 +1,51 @@
+server.host: "{{ kibana.ip_address }}"
+# We bind to the port defined in the inventory. By default, it is port 5601
+server.port: "{{ kibana.ports[0] }}"
+server.ssl.certificate: /usr/share/kibana/config/ssl.crt
+server.ssl.key: /usr/share/kibana/config/ssl.key
+server.ssl.certificateAuthorities: ["/usr/share/kibana/config/kibana_signing_ca.crt"]
+server.ssl.enabled: true
+server.publicBaseUrl: "https://{{kibana_fqdn}}"
+
+elasticsearch.hosts:
+{% for host in groups['elastic_master_nodes'] %}
+  - https://{{ host }}:9200
+{% endfor %}
+# to accept internal CA certificate that issued the cluster certificates
+elasticsearch.ssl.certificateAuthorities: ["/usr/share/kibana/config/ca.crt"]
+elasticsearch.ssl.verificationMode: certificate
+elasticsearch.username: kibana_system
+elasticsearch.password: {{ kibana_system_password }}
+# millisec
+elasticsearch.requestTimeout: 120000
+elasticsearch.shardTimeout: 60000
+
+telemetry.enabled: false
+
+xpack.security.enabled: true
+xpack.security.encryptionKey: "{{kibana_security_encryptionkey}}"
+xpack.encryptedSavedObjects.encryptionKey: '{{kibana_savedobjects_encryptionkey}}'
+xpack.reporting.encryptionKey: '{{kibana_reporting_encryptionkey}}'
+
+{% if monitoring_cluster %}
+xpack.monitoring.enabled: true
+xpack.monitoring.kibana.collection.enabled: false # legacy
+{% else %}
+xpack.monitoring.enabled: true
+xpack.monitoring.kibana.collection.enabled: false # legacy
+{% endif%}
+
+# use Cgroup details
+# only enable this when you migrated to new podman stack
+#monitoring.ui.container.elasticsearch.enabled: true
+#monitoring.ui.container.logstash.enabled: true
+
+logging:
+  appenders:
+    file:
+      type: file
+      fileName: /var/log/kibana/kibana.json
+      layout:
+        type: json
+  root:
+    appenders: [default, file]

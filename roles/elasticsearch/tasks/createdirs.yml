@@ -1,0 +1,15 @@
+---
+
+- name: Create persistent directories for Elasticsearch
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "1000"
+    group: "1000"
+    mode: '0755'
+  loop:
+    - "{{ elastic_data }}/data"
+    - "{{ elastic_data }}/logs"
+    - "{{ elastic_data }}/snapshots"
+    - "{{ elastic_config }}/certs"
+    - "{{ elastic_config }}/config"

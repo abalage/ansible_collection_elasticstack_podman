@@ -1,0 +1,36 @@
+---
+# defaults file for metricbeat
+state: "started"
+recreate: "no"
+firewalld_zone: "public"
+timezone: "Europe/Budapest"
+
+# networking
+metricbeat_pod_name: "metricbeat"
+metricbeat_network: "host"
+
+# persistend directories
+metricbeat_config: "{{ container_conf_dir }}/{{inventory_hostname_short}}.metricbeat_{{metricbeat.instance_name}}"
+
+# image tag and version
+metricbeat_image: "docker.elastic.co/beats/metricbeat"
+metricbeat_version: "{{ elk_version | default(7.14.1)}}"
+
+metricbeat:
+  instance_name: "internal01"
+  memory_limit: 4g
+  cpu_limit: 5
+  ports:
+    - "5066"
+    - "5067"
+  elastic_http_scheme: "{{es_api_scheme}}"
+  kibana_http_scheme: "https"
+  beat_http_scheme: "http"
+  logstash_http_scheme: "http"
+  certificate_validation: "none"
+  source_cluster_name: "{{cluster_name}}"
+  monitoring_cluster_url: "http://172.0.0.1:9200"
+  monitoring_read_user_name: "remote_monitoring_user"
+  monitoring_read_user_pass: "changeme"
+  monitoring_write_user_name: "remote_monitoring_user"
+  monitoring_write_user_pass: "changeme"

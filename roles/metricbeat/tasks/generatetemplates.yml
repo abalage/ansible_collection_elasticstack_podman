@@ -1,0 +1,11 @@
+---
+
+- name: "Generating metricbeat config and placing into config directory"
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ metricbeat_config }}/config/{{ item }}"
+    mode: "0644"
+    owner: "root"
+    group: "root"
+  loop:
+    - metricbeat.docker.yml

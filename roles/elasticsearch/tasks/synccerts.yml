@@ -1,0 +1,16 @@
+---
+- name: Copy the certificate used to issue the Elasticsearch node certificates to Kibana servers
+  copy:
+    content: "{{ item.source }}"
+    dest: "{{ elastic_config }}/certs/{{ item.file }}"
+    mode: "0440"
+    owner: "1000"
+    group: "1000"
+  loop:
+    - file: ca.crt
+      source: "{{ cluster_ca_crt }}"
+    - file: instance.crt
+      source: "{{ cluster_instance_crt}}"
+    - file: instance.key
+      source: "{{ cluster_instance_cert_key }}"
+  no_log: true

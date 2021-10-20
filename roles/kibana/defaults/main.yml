@@ -1,0 +1,53 @@
+---
+# defaults file for kibana
+state: "started"
+recreate: "no"
+firewalld_zone: "public"
+timezone: "Europe/Budapest"
+
+# persistent directories
+kibana_config: "{{ container_conf_dir }}/{{inventory_hostname_short}}.kibana_{{kibana.instance_name}}"
+kibana_data: "{{ container_data_dir }}/{{inventory_hostname_short}}.kibana_{{kibana.instance_name}}"
+
+# container defaults
+kibana_image: "docker.elastic.co/kibana/kibana"
+kibana_version: "{{ elk_version | default(7.14.1)}}"
+
+kibana_pod_name: "kibana"
+kibana_pod_network: "bridge"
+
+kibana_fqdn: "example.com"
+
+# service level settings (shared between role elasticsearch and role kibana)
+kibana_system_password: "changeMe"
+
+kibana:
+  ip_address: "{{ service_ip }}"
+  java_opts: "-Xms2g -Xmx2g"
+  instance_name: "internal01"
+  memory_limit: 2g
+  cpu_limit: 1
+  ports:
+    - "5601"
+
+# This setting is is required for enabling API access
+kibana_security_encryptionkey: "{{vault_kibana_encryptionkey}}"
+kibana_savedobjects_encryptionkey: "{{vault_kibana_savedobjects_encryptionkey}}"
+kibana_reporting_encryptionkey: "{{vault_kibana_reporting_encryptionkey}}"
+
+# KIBANA related certificates:
+# SHOULD BE ACCESSIBLE FOR BEATS TOO
+# what about putting into "group_vars/elastic_stack"
+
+# CA certificate (chain) that signed the SSL server certificate used by Kibana
+# For now, make it the same as the cluster CA certificate. If it is different, copy the cert here.
+kibana_signing_ca_crt: "{{ cluster_ca_crt }}"
+
+# SSL server certificate used by Kibana to encrypt communication
+# For now, make it the same as the cluster instance certificate. If it is different, copy the cert here.
+kibana_ssl_certificate: "{{ cluster_instance_crt }}"
+
+# SSL server certificate private key used by Kibana to encrypt communication
+# For now, make it the same as the vaulted instance certificate key. If it is different, copy the key (preferably vaulted) here.
+kibana_ssl_certificate_key: "{{ cluster_instance_cert_key }}"
+

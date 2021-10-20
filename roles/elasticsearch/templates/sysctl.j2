@@ -1,0 +1,38 @@
+### TUNING VIRTUAL MEMORY ###
+
+vm.max_map_count=262144
+vm.swappiness=1 
+
+### TUNING NETWORK PERFORMANCE ###
+# Default Socket Receive Buffer
+net.core.rmem_default = 31457280
+
+# Maximum Socket Receive Buffer
+net.core.rmem_max = 12582912
+
+# Default Socket Send Buffer
+net.core.wmem_default = 31457280
+
+# Maximum Socket Send Buffer
+net.core.wmem_max = 12582912
+
+# Increase number of incoming connections
+net.core.somaxconn = 65535
+
+# Increase number of incoming connections backlog
+net.core.netdev_max_backlog = 65536
+
+# Increase the maximum amount of option memory buffers
+net.core.optmem_max = 25165824
+
+# Increase the read-buffer space allocatable
+net.ipv4.tcp_rmem = 8192 87380 16777216
+net.ipv4.udp_rmem_min = 16384
+
+# Increase the write-buffer-space allocatable
+net.ipv4.tcp_wmem = 8192 65536 16777216
+net.ipv4.udp_wmem_min = 16384
+
+# Decrease the number of retransmissions to detect node failures quicker.
+# https://www.elastic.co/guide/en/elasticsearch/reference/7.14/system-config-tcpretries.html
+net.ipv4.tcp_retries2 = 5

@@ -1,0 +1,102 @@
+# Read configuration from the inventory elastic_stack file and populate internal variables
+# ======================== Elasticsearch Configuration =========================
+#
+# NOTE: Elasticsearch comes with reasonable defaults for most settings.
+#       Before you set out to tweak and tune the configuration, make sure you
+#       understand what are you trying to accomplish and the consequences.
+#
+# The primary way of configuring a node is via this file. This template lists
+# the most important settings you may want to configure for a production cluster.
+#
+# Please consult the documentation for further information on configuration options:
+# https://www.elastic.co/guide/en/elasticsearch/reference/index.html
+#
+# ---------------------------------- Cluster -----------------------------------
+#
+# Use a descriptive name for your cluster:
+#
+cluster.name: {{ cluster_name }}
+# ------------------------------------ Node ------------------------------------
+#
+# Use a descriptive name for the node:
+#
+node.name: "{{inventory_hostname_short}}.es_{{elastic.instance_name}}"
+node.attr.rack_id: "{{ elastic.rack_id }}"
+node.attr.server_room: "{{ elastic.server_room }}"
+node.attr.host_name: "{{ elastic.hostname }}"
+node.attr.nodetype: "{{elastic.nodetype}}"
+node.roles:
+{%for role in elastic.noderoles %}
+  - "{{ role }}"
+{% endfor %}
+
+network.host: "{{ elastic.ip_address }}"
+
+# Node configuration
+
+# Configuration options common for all elasticsearch nodes:
+{% if elastic.deployment_type is defined %}
+discovery.type: "{{elastic.deployment_type}}"
+{% else %}
+discovery.seed_hosts: ["{{ groups['elastic_stack']|join('", "') }}"]
+cluster.initial_master_nodes: ["{{ groups['elastic_master_nodes']|join('", "') }}"]
+{% endif %}
+
+xpack.security.enabled: true
+xpack.security.authc.api_key.enabled: true
+xpack.security.transport.ssl.enabled: true
+xpack.security.transport.ssl.verification_mode: none
+#xpack.security.transport.ssl.verification_mode=certificate
+xpack.security.transport.ssl.certificate_authorities: [ "/usr/share/elasticsearch/config/certificates/ca.crt" ]
+xpack.security.transport.ssl.certificate: /usr/share/elasticsearch/config/certificates/instance.crt
+xpack.security.transport.ssl.key: /usr/share/elasticsearch/config/certificates/instance.key
+xpack.security.http.ssl.enabled: true
+xpack.security.http.ssl.verification_mode: none
+#xpack.security.http.ssl.verification_mode=certificate
+xpack.security.http.ssl.certificate_authorities: [ "/usr/share/elasticsearch/config/certificates/ca.crt" ]
+# FIXME it is wrong to use the same certs for Kibana, use "certutil http"
+# https://www.elastic.co/guide/en/elasticsearch/reference/7.14/security-basic-setup-https.html
+xpack.security.http.ssl.certificate: /usr/share/elasticsearch/config/certificates/instance.crt
+xpack.security.http.ssl.key: /usr/share/elasticsearch/config/certificates/instance.key
+xpack.security.audit.enabled: true
+
+{% if monitoring_cluster %}
+# do not monitor itself
+xpack.monitoring.collection.enabled: false
+xpack.monitoring.history.duration: 14d # (default: 7d)
+xpack.monitoring.elasticsearch.collection.enabled: false # explicit is better than implicit
+# https://www.elastic.co/guide/en/elasticsearch/reference/current/local-exporter.html#local-exporter-cleaner
+{% else %}
+xpack.monitoring.collection.enabled: true
+xpack.monitoring.elasticsearch.collection.enabled: true # explicit is better than implicit
+{%endif%}
+
+#
+# ----------------------------------- Paths ------------------------------------
+#
+# Path to directory where to store the data (separate multiple locations by comma):
+#
+path.data: "/usr/share/elasticsearch/data"
+
+#
+# Path to log files:
+#
+path.logs: "/usr/share/elasticsearch/logs"
+#
+# Path to snapshot repository:
+#
+path.repo: ["{{elastic_snapshot_repository}}"]
+#
+# ----------------------------------- Memory -----------------------------------
+#
+# Lock the memory on startup:
+#
+bootstrap.memory_lock: "true"
+#
+# Make sure that the heap size is set to about half the memory available
+# on the system and that the owner of the process is allowed to use this
+# limit.
+#
+# Elasticsearch performs poorly when the system is swapping the memory.
+#
+
