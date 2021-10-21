@@ -18,8 +18,8 @@ metricbeat_version: "{{ elk_version | default(7.14.1)}}"
 
 metricbeat:
   instance_name: "internal01"
-  memory_limit: 4g
-  cpu_limit: 5
+  memory_limit: 1g
+  cpu_limit: 1
   ports:
     - "5066"
     - "5067"
@@ -28,8 +28,8 @@ metricbeat:
   beat_http_scheme: "http"
   logstash_http_scheme: "http"
   certificate_validation: "none"
-  source_cluster_name: "{{cluster_name}}"
-  monitoring_cluster_url: "http://172.0.0.1:9200"
+  source_cluster_name: "{{elastic_cluster_name}}"
+  monitoring_cluster_url: "{{elastic_http_scheme}}://{{groups['elastic_master_nodes'][0]}}:9200"
   monitoring_read_user_name: "remote_monitoring_user"
   monitoring_read_user_pass: "changeme"
   monitoring_write_user_name: "remote_monitoring_user"
