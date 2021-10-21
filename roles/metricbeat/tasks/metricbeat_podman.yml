@@ -88,7 +88,7 @@
         state: enabled
         zone: "{{ firewalld_zone }}"
       loop: "{{metricbeat.ports}}"
-      when: metricbeat_network == "host"
+      when: metricbeat_pod_network == "host"
 
     - name: Hand over pod and container mgmt to systemd
       vars:

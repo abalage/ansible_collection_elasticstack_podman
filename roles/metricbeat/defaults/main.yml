@@ -7,7 +7,7 @@ timezone: "Europe/Budapest"
 
 # networking
 metricbeat_pod_name: "metricbeat"
-metricbeat_network: "host"
+metricbeat_pod_network: "bridge"
 
 # persistend directories
 metricbeat_config: "{{ container_conf_dir }}/{{inventory_hostname_short}}.metricbeat_{{metricbeat.instance_name}}"
