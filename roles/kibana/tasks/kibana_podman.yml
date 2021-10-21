@@ -26,7 +26,7 @@
       podman_container:
         name: "{{inventory_hostname_short}}.kibana_{{ kibana.instance_name }}"
         pod: "{{ pod_name }}"
-        image: {{ kibana_image }}:{{ kibana_version }}
+        image: "{{ kibana_image }}:{{ kibana_version }}"
         state: "{{ state }}"
         recreate: "{{ recreate }}"
         ## by default json loggin is used plus filebeat

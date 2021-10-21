@@ -57,7 +57,7 @@
       containers.podman.podman_container:
         name: "{{inventory_hostname_short}}.metricbeat_{{ metricbeat.instance_name }}"
         hostname: "{{inventory_hostname_short}}.metricbeat_{{ metricbeat.instance_name }}"
-        image: "{{metricbeat_image}}:{{elastic_version_tag}}"
+        image: "{{metricbeat_image}}:{{metricbeat_version}}"
         state: "{{ state }}"
         recreate: "{{ recreate }}"
         label:

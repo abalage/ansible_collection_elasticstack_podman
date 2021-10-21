@@ -28,7 +28,7 @@
       podman_container:
         name: "{{inventory_hostname_short}}.es_{{ elastic.instance_name }}"
         pod: "{{ pod_name }}"
-        image: {{ elastic_image }}:{{ elastic_version }}
+        image: "{{ elastic_image }}:{{ elastic_version }}"
         state: started
         stop_timeout: 90
         recreate: "{{ recreate }}"
