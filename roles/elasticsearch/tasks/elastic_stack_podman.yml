@@ -32,16 +32,16 @@
         state: started
         stop_timeout: 90
         recreate: "{{ recreate }}"
-## by default log4j2.properties is used plus filebeat
-## log driver k8s-file
-#        log_driver: k8s-file
-#        log_opt:
-#          path: "{{ elastic_data }}/logs/elasticsearch-container.log"
-#          max_size: 300mb
-## log driver to journald (where syslog-ng can pick-up)
-#        log_driver: journald
-#        log_opt:
-#          tag=elastic|{{ '{{' }}.ImageName{{ '}}' }}|podman
+        ## by default log4j2.properties is used plus filebeat
+        ## log driver k8s-file
+        #log_driver: k8s-file
+        #log_opt:
+        #  path: "{{ elastic_data }}/logs/elasticsearch-container.log"
+        #  max_size: 300mb
+        ## log driver to journald (where syslog-ng can pick-up)
+        #log_driver: journald
+        #log_opt:
+        #  tag=elastic|{{ '{{' }}.ImageName{{ '}}' }}|podman
         label:
           process: elasticsearch
         ulimit:

@@ -16,10 +16,10 @@ kibana_version: "{{ elk_version | default(7.14.1)}}"
 kibana_pod_name: "kibana"
 kibana_pod_network: "bridge"
 
-kibana_fqdn: "example.com"
+kibana_fqdn: "{{vault_kibana_fqdn | default(example.com)}}"
 
 # service level settings (shared between role elasticsearch and role kibana)
-kibana_system_password: "changeMe"
+kibana_system_password: "{{ vault_kibana_system_password | default(changeMe) }}"
 
 kibana:
   ip_address: "{{ service_ip }}"
@@ -31,7 +31,7 @@ kibana:
     - "5601"
 
 # This setting is is required for enabling API access
-kibana_security_encryptionkey: "{{vault_kibana_encryptionkey}}"
+kibana_security_encryptionkey: "{{vault_kibana_security_encryptionkey}}"
 kibana_savedobjects_encryptionkey: "{{vault_kibana_savedobjects_encryptionkey}}"
 kibana_reporting_encryptionkey: "{{vault_kibana_reporting_encryptionkey}}"
 

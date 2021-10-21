@@ -31,14 +31,14 @@
         recreate: "{{ recreate }}"
         ## by default json loggin is used plus filebeat
         ## log driver k8s-file
-        #        log_driver: k8s-file
-        #        log_opt:
-        #          path: "{{ kibana_data }}/logs/kibana-container.log"
-        #          max_size: 300mb
+        #log_driver: k8s-file
+        #log_opt:
+        #  path: "{{ kibana_data }}/logs/kibana-container.log"
+        #  max_size: 300mb
         ## log driver to journald (where syslog-ng can pick-up)
-        #        log_driver: journald
-        #        log_opt:
-        #          tag=kibana|{{ '{{' }}.ImageName{{ '}}' }}|podman
+        #log_driver: journald
+        #log_opt:
+        #  tag=kibana|{{ '{{' }}.ImageName{{ '}}' }}|podman
         label:
           process=kibana
           traefik.enable=true
