@@ -10,7 +10,6 @@
         state: "{{ state }}"
         recreate: "{{ recreate }}"
         network: "{{kibana_pod_network}}"
-        expose: "{{ kibana.ports }}"
       when: kibana_pod_network != "bridge"
 
     - name: Create pod for kibana
@@ -20,8 +19,7 @@
         state: "{{ state }}"
         recreate: "{{ recreate }}"
         network: "{{ kibana_pod_network }}"
-        publish:
-          - "{{ kibana.ports }}"
+        publish: "{{ kibana.ports }}"
       when: kibana_pod_network == "bridge"
 
     - name: Run Kibana container
@@ -43,11 +41,14 @@
         #          tag=kibana|{{ '{{' }}.ImageName{{ '}}' }}|podman
         label:
           process=kibana
-          #traefik.enable=true
-          #traefik.http.routers.kibana-www-router.entrypoints="websecure"
-          #traefik.http.routers.kibana-www-router.rule=Host(`{{ kibana_fqdn }}`)
-          #traefik.http.routers.kibana-www-router.service=kibana-www-service
-          #traefik.http.services.kibana-www-service.loadbalancer.server.port={{ kibana.ports[0] }}
+          traefik.enable=true
+          traefik.http.routers.kibana-www-router.entrypoints="websecure"
+          traefik.http.routers.kibana-www-router.rule=Host(`{{ kibana_fqdn }}`)
+          traefik.http.routers.kibana-www-router.tls=true
+          traefik.http.routers.kibana-www-router.service=kibana-www-service
+          traefik.http.services.kibana-www-service.loadbalancer.server.scheme=https
+          traefik.http.services.kibana-www-service.loadbalancer.server.port={{ kibana.ports[0] }}
+        expose: "{{ kibana.ports }}"
         memory: "{{kibana.memory_limit}}"
         cpus: "{{kibana.cpu_limit}}"
         volume:

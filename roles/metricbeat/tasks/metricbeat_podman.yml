@@ -11,7 +11,6 @@
         state: "{{ state }}"
         recreate: "{{ recreate }}"
         network: "{{metricbeat_pod_network}}"
-        expose: "{{ metricbeat.ports }}"
       when: metricbeat_pod_network != "bridge"
 
     - name: Create pod for metricbeat
@@ -21,9 +20,9 @@
         state: "{{ state }}"
         recreate: "{{ recreate }}"
         network: "{{ metricbeat_pod_network }}"
-        publish:
-          - "{{ service_ip}}:{{ metricbeat.ports[0] }}:{{ metricbeat.ports[0] }}"
-          - "{{ service_ip}}:{{ metricbeat.ports[1] }}:{{ metricbeat.ports[1] }}"
+        publish: "{{ metricbeat.ports }}"
+#          - "{{ service_ip}}:{{ metricbeat.ports[0] }}:{{ metricbeat.ports[0] }}"
+#          - "{{ service_ip}}:{{ metricbeat.ports[1] }}:{{ metricbeat.ports[1] }}"
       when: metricbeat_pod_network == "bridge"
 
     - name: Run Metricbeat container - setup
@@ -63,7 +62,7 @@
         recreate: "{{ recreate }}"
         label:
           process=metricbeat
-        expose: "{{metricbeat.ports}}"
+        expose: "{{ metricbeat.ports }}"
         memory: "{{metricbeat.memory_limit}}"
         cpus: "{{metricbeat.cpu_limit}}"
         env:

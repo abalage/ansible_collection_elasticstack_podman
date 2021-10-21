@@ -10,7 +10,6 @@
         state: "{{ state }}"
         recreate: "{{ recreate }}"
         network: "{{elastic_pod_network}}"
-        expose: "{{ elastic.ports }}"
       when: elastic_pod_network != "bridge"
 
     - name: Create pod for elasticsearch
@@ -21,8 +20,8 @@
         recreate: "{{ recreate }}"
         network: "{{ elastic_pod_network }}"
         publish:
-          - "{{ service_ip}}:{{ elastic_ports[0] }}:{{ elastic_ports[0] }}"
-          - "{{ service_ip}}:{{ elastic_ports[1] }}:{{ elastic_ports[1] }}"
+          - "{{ service_ip}}:{{ elastic.ports[0] }}:{{ elastic.ports[0] }}"
+          - "{{ service_ip}}:{{ elastic.ports[1] }}:{{ elastic.ports[1] }}"
       when: elastic_pod_network == "bridge"
 
     - name: Run Elastic container
@@ -47,6 +46,7 @@
           process: elasticsearch
         ulimit:
           - "memlock=-1:-1"
+        expose: "{{ elastic.ports }}"
         memory: "{{elastic.memory_limit}}"
         cpus: "{{elastic.cpu_limit}}"
         env:
