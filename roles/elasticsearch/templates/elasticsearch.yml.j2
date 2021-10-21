@@ -15,7 +15,7 @@
 #
 # Use a descriptive name for your cluster:
 #
-cluster.name: {{ cluster_name }}
+cluster.name: {{ elastic_cluster_name }}
 # ------------------------------------ Node ------------------------------------
 #
 # Use a descriptive name for the node:
@@ -63,7 +63,7 @@ xpack.security.audit.enabled: true
 {% if monitoring_cluster %}
 # do not monitor itself
 xpack.monitoring.collection.enabled: false
-xpack.monitoring.history.duration: 14d # (default: 7d)
+xpack.monitoring.history.duration: {{monitoring_data_history}} # (default: 7d)
 xpack.monitoring.elasticsearch.collection.enabled: false # explicit is better than implicit
 # https://www.elastic.co/guide/en/elasticsearch/reference/current/local-exporter.html#local-exporter-cleaner
 {% else %}

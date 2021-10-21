@@ -12,17 +12,18 @@ elastic_snapshot_repository: "/mnt/snapshot-repository"
 
 # container or pod networking
 elastic_pod_name: "elasticsearch"
-elastic_pod_network: "host"
+elastic_pod_network: "bridge"
 
 # container defaults
 elastic_image: "docker.elastic.co/elasticsearch/elasticsearch"
 elastic_version: "{{ elk_version | default(7.14.1)}}"
 
+# cluster settings
 elastic_cluster_name: "example.com"
-elastic_elastic_user: "elastic"
-elastic_password: "changeMe"
+monitoring_cluster: true
+monitoring_data_history: 3d
 
-# host specific variables, customisation should go to host_vars
+#### Host vars ####
 # FIXME the key-pairs should be kept even when they are not changed
 
 elastic:
@@ -47,16 +48,50 @@ elastic:
   rack_id: A1
   server_room: B1
 
-# mappings for compatibility with official ansible playbook
-es_api_scheme: "http"
-es_api_host: "{{ elastic.ip_address }}"
-es_api_port: "{{ elastic_listen_ports[0] }}"
+#### Certificates ####
+# Internal Certificate Authority, used to issue internal certificates
+cluster_ca_crt: "{{vault_cluster_ca_crt}}"
+# Cluster node certificate chain, signed by the CA above. This is installed on all Elasticsearch nodes.
+# This is a SAN certificate, listing the names of all of the nodes.
+# It is used both for intra-cluster transport encryption and also HTTPS API encryption.
+cluster_instance_crt: "{{vault_cluster_instance_crt}}"
+# Cluster node key to above certificate. This is installed on all Elasticsearch nodes
+# and enable them to encrypt intra-cluster transport communication as well as HTTPS APIs.
+cluster_instance_cert_key: "{{vault_cluster_instance_cert_key}}"
+
+# Logstash related certificates:
+ssl_cert: "{{ cluster_instance_crt }}"
+ssl_key: "{{ cluster_instance_cert_key }}"
+
+# KIBANA related certificates:
+# SHOULD BE ACCESSIBLE TO BEATS TOO
+
+# CA certificate (chain) that signed the SSL server certificate used by Kibana
+# For now, make it the same as the cluster CA certificate. If it is different, copy the cert here.
+kibana_signing_ca_crt: "{{ cluster_ca_crt }}"
+
+# SSL server certificate used by Kibana to encrypt communication
+# For now, make it the same as the cluster instance certificate. If it is different, copy the cert here.
+kibana_ssl_certificate: "{{ cluster_instance_crt }}"
+
+# SSL server certificate private key used by Kibana to encrypt communication
+# For now, make it the same as the vaulted instance certificate key. If it is different, copy the key (preferably vaulted) here.
+kibana_ssl_certificate_key: "{{ cluster_instance_cert_key }}"
+
+#### User and role management ####
+## The following settings are used by the playbook to connect to Elasticsearch via the HTTP API in order to configure the builtin user passwords
+## For the passwords, see the above section.
+## This is adapted from the official elasticsearch Ansible playbook found here:
+## https://github.com/elastic/ansible-elasticsearch/blob/master/tasks/xpack/security/elasticsearch-security-native.yml
+es_api_scheme: "https"
+es_api_host: "{{groups['elastic_master_nodes'][0]}}"
+es_api_port: "{{ elastic.ports[0] }}"
 es_api_uri: "{{ es_api_scheme }}://{{ es_api_host }}:{{ es_api_port }}"
 es_api_sleep: 15
 es_security_api: "_security"
 es_validate_certs: no
 es_api_basic_auth_username: "{{elastic_elastic_user}}"
-es_api_basic_auth_password: "{{elastic_elastic_password}}"
+es_api_basic_auth_password: "{{elastic_password}}"
 es_delete_unmanaged_file: true
 es_delete_unmanaged_native: true
 
@@ -120,11 +155,13 @@ es_users:
         - filebeat_setup
         - kibana_admin
 
-apm_system_password: "changeMe"
-kibana_system_password: "changeMe"
-logstash_system_password: "changeMe"
-beats_system_password: "changeMe"
-remote_monitoring_user_password: "changeMe"
-filebeat_publisher_user_password: "changeMe"
-filebeat_setup_user_password: "changeMe"
-filebeat_kibana_setup_user_password: "changeMe"
+elastic_elastic_user: "elastic"
+elastic_password: "{{vault_elastic_password | default(changeMe)}}"
+apm_system_password: "{{vault_apm_system_password | default(changeMe)}}"
+kibana_system_password: "{{vault_kibana_system_password | default(changeMe)}}"
+logstash_system_password: "{{vault_logstash_system_password | default(changeMe)}}"
+beats_system_password: "{{vault_beats_system_password | default(changeMe)}}"
+remote_monitoring_user_password: "{{vault_remote_monitoring_user_password | default(changeMe)}}"
+filebeat_publisher_user_password: "{{vault_filebeat_publisher_user_password | default(changeMe)}}"
+filebeat_setup_user_password: "{{vault_filebeat_setup_user_password | default(changeMe)}}"
+filebeat_kibana_setup_user_password: "{{vault_filebeat_kibana_setup_user_password | default(changeMe)}}"
