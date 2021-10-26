@@ -66,6 +66,7 @@ metricbeat.modules:
   # Monitoring instead of metricbeat-* indices.
   xpack.enabled: true
 
+{% if logstash_hosts is defined and logstash_hosts %}
 - module: logstash
   metricsets: ["node", "node_stats"]
   period: 10s
@@ -83,6 +84,7 @@ metricbeat.modules:
   # Set to true to send data collected by module to X-Pack
   # Monitoring instead of metricbeat-* indices.
   xpack.enabled: true
+{% endif %}
 
 - module: beat
   metricsets:
