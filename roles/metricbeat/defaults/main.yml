@@ -7,7 +7,7 @@ timezone: "Europe/Budapest"
 
 # networking
 metricbeat_pod_name: "metricbeat"
-metricbeat_pod_network: "bridge"
+metricbeat_pod_network: "host"
 
 # persistend directories
 metricbeat_config: "{{ container_conf_dir }}/{{inventory_hostname_short}}.metricbeat_{{metricbeat.instance_name}}"
@@ -18,6 +18,7 @@ metricbeat_version: "{{ elk_version | default(7.14.1)}}"
 
 metricbeat:
   instance_name: "internal01"
+  ip_address: "0.0.0.0"
   memory_limit: 1g
   cpu_limit: 1
   ports:

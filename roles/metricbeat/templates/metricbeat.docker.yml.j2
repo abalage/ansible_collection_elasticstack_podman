@@ -55,6 +55,7 @@ metricbeat.modules:
 {% for host in groups['kibana_hosts'] %}
     - {{metricbeat.kibana_http_scheme}}://{{host}}:5601
 {% endfor %}
+
   username: "{{metricbeat.monitoring_read_user_name}}"
   password: "{{metricbeat.monitoring_read_user_pass}}"
   basepath: ""
@@ -129,8 +130,8 @@ processors:
 monitoring.cluster_uuid: "{{cluster_uuid}}"
 
 http.enabled: true
-http.host: 0.0.0.0
-http.port: "5067"
+http.host: "{{metricbeat.ip_address}}"
+http.port: "{{metricbeat.ports[1]}}"
 
 output.elasticsearch:
   hosts: '${ELASTICSEARCH_HOSTS:localhost:9200}'
