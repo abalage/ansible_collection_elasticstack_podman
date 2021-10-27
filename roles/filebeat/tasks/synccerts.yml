@@ -1,0 +1,14 @@
+---
+- name: Copy the certificate for Filebeat
+  copy:
+    content: "{{ item.source }}"
+    dest: "{{ filebeat_config }}/certs/{{ item.file }}"
+    mode: "0440"
+    owner: "1000"
+    group: "1000"
+  loop:
+    - file: ca.crt
+      source: "{{ cluster_ca_crt }}"
+    - file: kibana_signing_ca.crt
+      source: "{{ kibana_signing_ca_crt }}"
+  no_log: true

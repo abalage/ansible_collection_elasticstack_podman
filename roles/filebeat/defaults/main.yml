@@ -1,0 +1,24 @@
+---
+# defaults file for elasticsearch
+state: "started"
+recreate: "no"
+firewalld_zone: "public"
+timezone: "Europe/Budapest"
+
+# persistent directories
+filebeat_config: "{{ container_conf_dir }}/{{inventory_hostname_short}}.filebeat_{{filebeat.instance_name}}"
+filebeat_data: "{{ container_data_dir }}/{{inventory_hostname_short}}.filebeat_{{filebeat.instance_name}}"
+
+filebeat_image: "docker.elastic.co/beats/filebeat"
+filebeat_version: "{{ elk_version | default(7.14.1)}}"
+
+filebeat_pod_name: "filebeat"
+filebeat_pod_network: "host"
+
+filebeat:
+  instance_name: "internal01"
+  ip_address: "0.0.0.0"
+  memory_limit: 1g
+  cpu_limit: 1
+  ports:
+    - "5066"

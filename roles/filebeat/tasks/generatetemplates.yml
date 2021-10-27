@@ -1,0 +1,8 @@
+---
+# TODO create separate yml for setup and for production
+- name: Generate filebeat.yml for Filebeat node
+  template:
+    src: "filebeat.yml.j2"
+    dest: "{{ filebeat_config }}/config/filebeat.yml"
+    group: "root"
+    owner: "root"
