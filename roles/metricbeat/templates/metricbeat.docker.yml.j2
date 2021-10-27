@@ -67,7 +67,7 @@ metricbeat.modules:
   # Monitoring instead of metricbeat-* indices.
   xpack.enabled: true
 
-{% if logstash_hosts is defined and logstash_hosts %}
+{% if groups['logstash_hosts'] is defined and groups['logstash_hosts'] %}
 - module: logstash
   metricsets: ["node", "node_stats"]
   period: 10s
@@ -112,6 +112,7 @@ metricbeat.modules:
 {% for host in groups['metricbeat_hosts'] %}
     - {{metricbeat.beat_http_scheme}}://{{host}}:5067
 {% endfor %}
+
   ssl.certificate_authorities: ["/etc/pki/root/ca.pem"]
   ssl.verification_mode: "{{metricbeat.certificate_validation}}"
   enabled: true

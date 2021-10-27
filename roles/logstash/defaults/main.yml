@@ -1,0 +1,43 @@
+---
+# defaults file for logstash
+state: "started"
+recreate: "no"
+firewalld_zone: "public"
+timezone: "Europe/Budapest"
+
+# networking
+logstash_pod_name: "logstash"
+logstash_pod_network: "host"
+
+# persistent directories
+logstash_config: "{{ container_conf_dir }}/{{inventory_hostname_short}}.logstash_{{logstash.instance_name}}"
+logstash_data: "{{ container_data_dir }}/{{inventory_hostname_short}}.logstash_{{logstash.instance_name}}"
+
+# image tag and version
+logstash_image: "docker.elastic.co/logstash/logstash"
+logstash_version: "{{ elk_version | default(7.14.1)}}"
+
+# Sizing help: https://www.elastic.co/guide/en/logstash/current/jvm-settings.html
+# https://www.elastic.co/guide/en/logstash/current/tuning-logstash.html
+logstash:
+  instance_name: "internal01"
+  ip_address: "0.0.0.0"
+#  heap_size: 2g
+  java_opts: "-Xms2g -Xmx2g"
+  memory_limit: 2g
+  cpu_limit: 2
+  xpack_management: false
+  api_port: "9600"
+  ports:
+    - "5045"
+    - "7500"
+    - "7501"
+    - "7502"
+    - "7503"
+    - "7504"
+    - "7505"
+    - "9600"
+    - "9601"
+  pipeline_ids:
+    - "tcp7500"
+    - "tcp7501"

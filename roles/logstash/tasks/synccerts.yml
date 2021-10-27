@@ -1,0 +1,16 @@
+---
+- name: Copy certificates to Logstash servers
+  copy:
+    content: "{{ item.source }}"
+    dest: "{{ logstash_config }}/certs/{{ item.file }}"
+    mode: "0440"
+    owner: "1000"
+    group: "1000"
+  loop:
+    - file: ca.crt
+      source: "{{ cluster_ca_crt }}"
+    - file: ssl_cert.crt
+      source: "{{ ssl_cert}}"
+    - file: ssl_cert.key
+      source: "{{ ssl_key }}"
+  no_log: true

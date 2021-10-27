@@ -1,0 +1,15 @@
+---
+- name: Create persistent directories for Logstash
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "1000"
+    group: "1000"
+    mode: '0755'
+  loop:
+    - "{{ logstash_data }}/data"
+    - "{{ logstash_data }}/data/queue"
+    - "{{ logstash_data }}/logs"
+    - "{{ logstash_config }}/certs"
+    - "{{ logstash_config }}/config"
+    - "{{ logstash_config }}/pipelines"

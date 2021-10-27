@@ -1,0 +1,27 @@
+---
+- name: Generate the configuration files of Logstash from templates
+  template:
+    src: "{{ item.source }}"
+    dest: "{{ logstash_config }}/{{ item.file }}"
+    mode: "0644"
+    owner: "1000"
+    group: "1000"
+  loop:
+    - file: "config/logstash.yml"
+      source: "logstash.yml.j2"
+    - file: "config/pipelines.yml"
+      source: "pipelines.yml.j2"
+    - file: "pipelines/pipeline_001.conf"
+      source: "pipeline_001.conf.j2"
+#    - file: "pipelines/pipeline_002.conf"
+#      source: "pipeline_002.conf.j2"
+
+- name: Generate log4j2.properties for Logstash node
+  copy:
+    src: "log4j2.properties"
+    dest: "{{ logstash_config }}/config/log4j2.properties"
+    group: "1000"
+    owner: "1000"
+
+
+

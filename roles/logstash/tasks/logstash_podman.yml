@@ -1,0 +1,83 @@
+---
+- name: Deploy Logstash in a pod
+  vars:
+    pod_name: "{{ logstash_pod_name }}.{{inventory_hostname_short}}.logstash_{{ logstash.instance_name }}"
+  block:
+    - name: Create pod for logstash
+      containers.podman.podman_pod:
+        name: "{{ pod_name }}"
+        hostname: "{{inventory_hostname_short}}.logstash_{{ logstash.instance_name }}"
+        state: "{{ state }}"
+        recreate: "{{ recreate }}"
+        network: "{{logstash_pod_network}}"
+      when: logstash_pod_network != "bridge"
+
+    - name: Create pod for logstash
+      containers.podman.podman_pod:
+        name: "{{ pod_name }}"
+        hostname: "{{inventory_hostname_short}}.logstash_{{ logstash.instance_name }}"
+        state: "{{ state }}"
+        recreate: "{{ recreate }}"
+        network: "{{ logstash_pod_network }}"
+        publish: "{{ logstash.ports }}"
+      when: logstash_pod_network == "bridge"
+
+    - name: Run Logstash container
+      podman_container:
+        name: "{{inventory_hostname_short}}.logstash_{{ logstash.instance_name }}"
+        pod: "{{ pod_name }}"
+        image: "{{ logstash_image }}:{{ logstash_version }}"
+        state: "{{ state }}"
+        recreate: "{{ recreate }}"
+        ## by default json loggin is used plus filebeat
+        ## log driver k8s-file
+        #log_driver: k8s-file
+        #log_opt:
+        #  path: "{{ logstash_data }}/logs/logstash-container.log"
+        #  max_size: 300mb
+        ## log driver to journald (where syslog-ng can pick-up)
+        #log_driver: journald
+        #log_opt:
+        #  tag=logstash|{{ '{{' }}.ImageName{{ '}}' }}|podman
+        label:
+          process: logstash
+        memory: "{{logstash.memory_limit}}"
+        cpus: "{{logstash.cpu_limit}}"
+        expose: "{{ logstash.ports }}"
+        env:
+          TZ: "{{ timezone }}"
+          LS_JAVA_OPTS: "{{logstash.java_opts}}"
+          NO_PROXY: "{{no_proxy}}"
+        volume:
+          - "{{ logstash_config }}/certs/ca.crt:/usr/share/logstash/certs/ca.crt:z"
+          - "{{ logstash_config }}/certs/ssl_cert.crt:/usr/share/logstash/certs/ssl_cert.crt:z"
+          - "{{ logstash_config }}/certs/ssl_cert.key:/usr/share/logstash/certs/ssl_cert.key:z"
+          - "{{ logstash_config }}/config/log4j2.properties:/usr/share/logstash/config/log4j2.properties:z"
+          - "{{ logstash_config }}/config/logstash.yml:/usr/share/logstash/config/logstash.yml:z"
+          - "{{ logstash_config }}/config/pipelines.yml:/usr/share/logstash/config/pipelines.yml:z"
+          - "{{ logstash_config }}/pipelines:/usr/share/logstash/pipeline:z"
+          - "{{ logstash_data }}/data:/usr/share/logstash/data:Z"
+          - "{{ logstash_data }}/logs:/usr/share/logstash/logs:z"
+      register: result
+      until: result is success
+      retries: 3
+      delay: 5
+      environment: "{{ proxy_env }}"
+
+    - name: Open up firewalld ports
+      firewalld:
+        port: "{{ item }}/tcp"
+        permanent: yes
+        immediate: yes
+        state: enabled
+        zone: "{{ firewalld_zone }}"
+      loop:
+        "{{ logstash.ports }}"
+      when: logstash_pod_network == "host"
+
+    - name: Hand over pod and container mgmt to systemd
+      vars:
+        container_name: "{{ pod_name }}"
+        type: pod
+      import_role:
+        name: podman_systemd_simple

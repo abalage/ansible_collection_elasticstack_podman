@@ -98,6 +98,7 @@ es_delete_unmanaged_native: true
 # https://www.elastic.co/guide/en/beats/filebeat/7.15/privileges-to-setup-beats.html
 # https://www.elastic.co/guide/en/beats/filebeat/7.15/privileges-to-publish-events.html
 # https://www.elastic.co/guide/en/elasticsearch/reference/7.15/built-in-roles.html
+# https://www.elastic.co/guide/en/logstash/7.15/ls-security.html
 es_roles:
   native:
     filebeat_setup:
@@ -122,6 +123,25 @@ es_roles:
             - create_doc
             - view_index_metadata
             - create_index
+    logstash_writer:
+      cluster:
+        - manage_ilm
+        - manage_index_templates
+        - monitor
+      indices:
+        - names: 'logstash-*'
+          privileges:
+            - write
+            - create
+            - manage
+            - manage_ilm
+            - create_index
+    logstash_reader:
+      indices:
+        - names: 'logstash-*'
+          privileges:
+            - read
+            - view_index_metadata
 
 es_users:
   native:
@@ -154,6 +174,23 @@ es_users:
       roles:
         - filebeat_setup
         - kibana_admin
+    logstash_internal:
+      password: "{{ logstash_internal_password }}"
+      roles:
+        - logstash_writer
+    logstash_user:
+      password: "{{ logstash_user_password }}"
+      roles:
+        - logstash_reader
+    logstash_admin_user:
+      password: "{{ logstash_admin_password }}"
+      roles:
+        - logstash_writer
+        - logstash_admin
+
+# logstash_internal is for ingesting logs to Elasticsearch output
+# logstash_user is for read only access to logstash indices
+# logstash_admin_user is for centralized pipeline management: xpack.management.elasticsearch.username
 
 elastic_elastic_user: "elastic"
 elastic_password: "{{vault_elastic_password | default(changeMe)}}"
@@ -165,3 +202,6 @@ remote_monitoring_user_password: "{{vault_remote_monitoring_user_password | defa
 filebeat_publisher_user_password: "{{vault_filebeat_publisher_user_password | default(changeMe)}}"
 filebeat_setup_user_password: "{{vault_filebeat_setup_user_password | default(changeMe)}}"
 filebeat_kibana_setup_user_password: "{{vault_filebeat_kibana_setup_user_password | default(changeMe)}}"
+logstash_internal_password: "{{vault_logstash_internal_password | default(changeMe)}}"
+logstash_user_password: "{{vault_logstash_user_password | default(changeMe)}}"
+logstash_admin_password: "{{vault_logstash_admin_password | default(changeMe)}}"

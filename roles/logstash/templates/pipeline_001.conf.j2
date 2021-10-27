@@ -1,0 +1,123 @@
+input {
+    tcp {
+        codec => cef { delimiter => "\n" }
+        port => {{ logstash.ports[1] }}
+        ssl_enable => true
+        ssl_cert => "/usr/share/logstash/certs/ssl_cert.crt"
+        ssl_key => "/usr/share/logstash/certs/ssl_cert.key"
+        ssl_verify => false
+    }
+}
+
+filter {
+  mutate {
+    rename => { "host" => "[observer][ip]" }
+    }
+  mutate {
+    rename => { "[ad][ProcessID]" => "[process][pid]" }
+    rename => { "[ad][EventRecordID]" => "[event][id]" }
+    rename => { "[ad][WorkstationName]" => "[host][name]" }
+    rename => { "agentAddress" => "[observer][ip]" }
+    rename => { "agentHostName" => "[observer][hostname]" }
+    rename => { "agentId" => "[observer][serial_number]" }
+    rename => { "agentMacAddress" => "[observer][mac]" }
+    rename => { "agentTimeZone" => "[event][timezone]" }
+    rename => { "agentType" => "[observer][type]" }
+    rename => { "agentVersion" => "[observer][version]" }
+    rename => { "applicationProtocol" => "[network][application]" }
+    rename => { "bytesIn" => "[source][bytes]" }
+    rename => { "bytesOut" => "[destination][bytes]" }
+    rename => { "categoryDeviceType" => "[host][type]" }
+    copy => { "destinationAddress" => "[destination][ip]" }
+    rename => { "destinationPort" => "[destination][port]" }
+    rename => { "destinationProcessName" => "[process][executable]" }
+    rename => { "destinationServiceName" => "[service][name]" }
+    rename => { "deviceAction" => "[event][action]" }
+    copy => { "deviceAddress" => "[host][ip]" }
+    rename => { "deviceHostName" => "[host][name]" }
+    rename => { "deviceNtDomain" => "[host][domain]" }
+    rename => { "deviceProcessId" => "[process][pid]" }
+    rename => { "deviceProcessName" => "[process][name]" }
+    rename => { "externalId" => "[event][code]" }
+    rename => { "fileCreateTime" => "[file][created]" }
+    rename => { "fileId" => "[file][inode]" }
+    rename => { "fileModificationTime" => "[file][mtime]" }
+    rename => { "fileName" => "[file][name]" }
+    rename => { "filePath" => "[file][path]" }
+    rename => { "fileSize" => "[file][size]" }
+    rename => { "fileType" => "[file][type]" }
+    rename => { "name" => "[event][reason]" }
+    rename => { "requestClientApplication" => "[user_agent][original]" }
+    copy => { "sourceAddress" => "[source][ip]" }
+    rename => { "sourceHostName" => "[source][hostname]" }
+    rename => { "sourcePort" => "[source][port]" }
+    rename => { "categoryObject" => "[event][module]" }
+    copy => { "categoryBehavior" => "[event][dataset]" }
+    rename => { "deviceProduct" => "[host][os][platform]" }
+    lowercase => [ "[host][os][platform]" ]
+  }
+  if "Authentication" in [categoryBehavior] {
+    mutate {
+      add_field => { "[event][category]" => "authentication"}
+    }
+  }
+  if "Audit_success" in [deviceSeverity] {
+    mutate {
+      add_field => { "[event][outcome]" => "success"}
+    }
+  }
+  if "Audit_failure" in [deviceSeverity] {
+    mutate {
+      add_field => { "[event][outcome]" => "failure"}
+    }
+  }
+  if "authentication" in [event][category] {
+    mutate {
+      copy => { "destinationUserName" => "[user][name]" }
+    }
+  }
+  # Map the @timestamp with the event time, as recorded in deviceReceiptTime
+  date {
+    match => [ "deviceReceiptTime", "MMM dd yyyy HH:mm:ss", "MMM  d yyyy HH:mm:ss", "UNIX_MS" ]
+  }
+  date {
+    match => [ "agentReceiptTime", "UNIX_MS" ]
+    target => "[event][created]"
+  }
+
+  # To map the attacker Geo IP if plausible
+  geoip {
+    source => "sourceAddress"
+    target => "source"
+  }
+  # To map the target Geo IP if plausible
+  geoip {
+    source => "destinationAddress"
+    target => "destination"
+  }
+  # To map the log producing device Geo IP if plausible
+  geoip {
+    source => "deviceAddress"
+    target => "device"
+  }
+  translate {
+    field => "[observer][serial_number]"
+    destination => "[observer][arcsight_connector_name]"
+    dictionary => {
+            "ab8a-8bbea3dd2f23" => "connector1-04-Syslog-Network"
+    }
+  }
+}
+
+output {
+  elasticsearch {
+    hosts => [ "{{ groups['elastic_master_nodes']|join('", "')}}" ]
+    index => "arcsight-%{+YYYY.MM.dd}"
+    ecs_compatibility => v1
+    ssl => true
+    ssl_certificate_verification => false
+    cacert => "/usr/share/logstash/certs/ca.crt"
+    user => logstash_internal
+    password => {{logstash_internal_password}}
+  }
+}
