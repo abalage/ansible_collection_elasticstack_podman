@@ -7,7 +7,7 @@
     - name: Create pod for metricbeat
       containers.podman.podman_pod:
         name: "{{ pod_name }}"
-        hostname: "{{inventory_hostname_short}}.es_{{ metricbeat.instance_name }}"
+        hostname: "{{inventory_hostname_short}}.metricbeat_{{ metricbeat.instance_name }}"
         state: "{{ state }}"
         recreate: "{{ recreate }}"
         network: "{{metricbeat_pod_network}}"
@@ -16,19 +16,17 @@
     - name: Create pod for metricbeat
       containers.podman.podman_pod:
         name: "{{ pod_name }}"
-        hostname: "{{inventory_hostname_short}}.es_{{ metricbeat.instance_name }}"
+        hostname: "{{inventory_hostname_short}}.metricbeat_{{ metricbeat.instance_name }}"
         state: "{{ state }}"
         recreate: "{{ recreate }}"
         network: "{{ metricbeat_pod_network }}"
         publish: "{{ metricbeat.ports }}"
-#          - "{{ service_ip}}:{{ metricbeat.ports[0] }}:{{ metricbeat.ports[0] }}"
-#          - "{{ service_ip}}:{{ metricbeat.ports[1] }}:{{ metricbeat.ports[1] }}"
       when: metricbeat_pod_network == "bridge"
 
     - name: Run Metricbeat container - setup
       containers.podman.podman_container:
         name: "{{inventory_hostname_short}}.metricbeat_{{ metricbeat.instance_name }}"
-        hostname: "{{inventory_hostname_short}}.metricbeat_{{ metricbeat.instance_name }}"
+        pod: "{{ pod_name }}"
         image: "{{metricbeat_image}}:{{metricbeat_version}}"
         state: "{{ state }}"
         recreate: "{{ recreate }}"
@@ -56,7 +54,7 @@
     - name: Run Metricbeat container
       containers.podman.podman_container:
         name: "{{inventory_hostname_short}}.metricbeat_{{ metricbeat.instance_name }}"
-        hostname: "{{inventory_hostname_short}}.metricbeat_{{ metricbeat.instance_name }}"
+        pod: "{{ pod_name }}"
         image: "{{metricbeat_image}}:{{metricbeat_version}}"
         state: "{{ state }}"
         recreate: "{{ recreate }}"
