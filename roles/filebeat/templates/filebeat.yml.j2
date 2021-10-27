@@ -108,22 +108,23 @@ filebeat.modules:
     #var.paths:
 
 #------------------------------- Logstash Module -------------------------------
-#- module: logstash
+- module: logstash
   # logs
-  #log:
-    #enabled: true
+  log:
+    enabled: true
 
     # Set custom paths for the log files. If left empty,
     # Filebeat will choose the paths depending on your OS.
-    # var.paths:
+    var.paths: ["/var/log/logstash/logstash-json.log"]
 
   # Slow logs
-  #slowlog:
-    #enabled: true
+  slowlog:
+    enabled: true
 
     # Set custom paths for the log files. If left empty,
     # Filebeat will choose the paths depending on your OS.
-    #var.paths:
+    var.paths: ["/var/log/logstash/logstash-slowlog-json.log"]
+
 
 #=========================== Filebeat inputs =============================
 
