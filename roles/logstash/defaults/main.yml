@@ -41,3 +41,5 @@ logstash:
   pipeline_ids:
     - "tcp7500"
     - "tcp7501"
+
+cluster_ca_crt: "{{ vault_cluster_ca_crt }}"

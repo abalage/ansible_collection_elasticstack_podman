@@ -59,9 +59,9 @@ cluster_instance_crt: "{{vault_cluster_instance_crt}}"
 # and enable them to encrypt intra-cluster transport communication as well as HTTPS APIs.
 cluster_instance_cert_key: "{{vault_cluster_instance_cert_key}}"
 
-# Logstash related certificates:
-ssl_cert: "{{ cluster_instance_crt }}"
-ssl_key: "{{ cluster_instance_cert_key }}"
+## Logstash related certificates:
+#ssl_cert: "{{ cluster_instance_crt }}"
+#ssl_key: "{{ cluster_instance_cert_key }}"
 
 # KIBANA related certificates:
 # SHOULD BE ACCESSIBLE TO BEATS TOO

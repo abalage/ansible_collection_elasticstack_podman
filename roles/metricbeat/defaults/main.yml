@@ -35,3 +35,5 @@ metricbeat:
   monitoring_read_user_pass: "changeme"
   monitoring_write_user_name: "remote_monitoring_user"
   monitoring_write_user_pass: "changeme"
+
+cluster_ca_crt: "{{ vault_cluster_ca_crt }}"

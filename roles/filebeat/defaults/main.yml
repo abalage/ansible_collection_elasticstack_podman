@@ -22,3 +22,7 @@ filebeat:
   cpu_limit: 1
   ports:
     - "5066"
+
+cluster_ca_crt: "{{ vault_cluster_ca_crt }}"
+
+kibana_signing_ca_crt: "{{ vault_cluster_ca_crt }}"

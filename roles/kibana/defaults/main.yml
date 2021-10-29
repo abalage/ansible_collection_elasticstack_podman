@@ -41,13 +41,16 @@ kibana_reporting_encryptionkey: "{{vault_kibana_reporting_encryptionkey}}"
 
 # CA certificate (chain) that signed the SSL server certificate used by Kibana
 # For now, make it the same as the cluster CA certificate. If it is different, copy the cert here.
-kibana_signing_ca_crt: "{{ cluster_ca_crt }}"
+
+cluster_ca_crt: "{{ vault_cluster_ca_crt }}"
+
+kibana_signing_ca_crt: "{{ vault_cluster_ca_crt }}"
 
 # SSL server certificate used by Kibana to encrypt communication
 # For now, make it the same as the cluster instance certificate. If it is different, copy the cert here.
-kibana_ssl_certificate: "{{ cluster_instance_crt }}"
+kibana_ssl_certificate: "{{ vault_cluster_instance_crt }}"
 
 # SSL server certificate private key used by Kibana to encrypt communication
 # For now, make it the same as the vaulted instance certificate key. If it is different, copy the key (preferably vaulted) here.
-kibana_ssl_certificate_key: "{{ cluster_instance_cert_key }}"
+kibana_ssl_certificate_key: "{{ vault_cluster_instance_cert_key }}"
 
