@@ -191,17 +191,18 @@ es_users:
 # logstash_internal is for ingesting logs to Elasticsearch output
 # logstash_user is for read only access to logstash indices
 # logstash_admin_user is for centralized pipeline management: xpack.management.elasticsearch.username
+# logstash_system user is for storing monitoring information in Elasticsearch.
 
+apm_system_password: "{{vault_apm_system_password | default(changeMe)}}"
+beats_system_password: "{{vault_beats_system_password | default(changeMe)}}"
 elastic_elastic_user: "elastic"
 elastic_password: "{{vault_elastic_password | default(changeMe)}}"
-apm_system_password: "{{vault_apm_system_password | default(changeMe)}}"
-kibana_system_password: "{{vault_kibana_system_password | default(changeMe)}}"
-logstash_system_password: "{{vault_logstash_system_password | default(changeMe)}}"
-beats_system_password: "{{vault_beats_system_password | default(changeMe)}}"
-remote_monitoring_user_password: "{{vault_remote_monitoring_user_password | default(changeMe)}}"
+filebeat_kibana_setup_user_password: "{{vault_filebeat_kibana_setup_user_password | default(changeMe)}}"
 filebeat_publisher_user_password: "{{vault_filebeat_publisher_user_password | default(changeMe)}}"
 filebeat_setup_user_password: "{{vault_filebeat_setup_user_password | default(changeMe)}}"
-filebeat_kibana_setup_user_password: "{{vault_filebeat_kibana_setup_user_password | default(changeMe)}}"
+kibana_system_password: "{{vault_kibana_system_password | default(changeMe)}}"
+logstash_system_password: "{{vault_logstash_system_password | default(changeMe)}}"
+logstash_admin_password: "{{vault_logstash_admin_password | default(changeMe)}}"
 logstash_internal_password: "{{vault_logstash_internal_password | default(changeMe)}}"
 logstash_user_password: "{{vault_logstash_user_password | default(changeMe)}}"
-logstash_admin_password: "{{vault_logstash_admin_password | default(changeMe)}}"
+remote_monitoring_user_password: "{{vault_remote_monitoring_user_password | default(changeMe)}}"

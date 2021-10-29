@@ -17,6 +17,15 @@ logstash_data: "{{ container_data_dir }}/{{inventory_hostname_short}}.logstash_{
 logstash_image: "docker.elastic.co/logstash/logstash"
 logstash_version: "{{ elk_version | default(7.14.1)}}"
 
+# logstash_admin_user is for centralized pipeline management: xpack.management.elasticsearch.username
+# logstash_internal is for ingesting logs to Elasticsearch output
+# logstash_system user is for storing monitoring information in Elasticsearch.
+# logstash_user is for read only access to logstash indices
+logstash_admin_password: "{{vault_logstash_admin_password | default(changeMe)}}"
+logstash_internal_password: "{{vault_logstash_internal_password | default(changeMe)}}"
+logstash_system_password: "{{vault_logstash_system_password | default(changeMe)}}"
+logstash_user_password: "{{vault_logstash_user_password | default(changeMe)}}"
+
 # Sizing help: https://www.elastic.co/guide/en/logstash/current/jvm-settings.html
 # https://www.elastic.co/guide/en/logstash/current/tuning-logstash.html
 logstash:
