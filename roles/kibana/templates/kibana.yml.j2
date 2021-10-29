@@ -27,13 +27,8 @@ xpack.security.encryptionKey: "{{kibana_security_encryptionkey}}"
 xpack.encryptedSavedObjects.encryptionKey: '{{kibana_savedobjects_encryptionkey}}'
 xpack.reporting.encryptionKey: '{{kibana_reporting_encryptionkey}}'
 
-{% if monitoring_cluster %}
 xpack.monitoring.enabled: true
 xpack.monitoring.kibana.collection.enabled: false # legacy
-{% else %}
-xpack.monitoring.enabled: true
-xpack.monitoring.kibana.collection.enabled: false # legacy
-{% endif%}
 
 # use Cgroup details
 # only enable this when you migrated to new podman stack
