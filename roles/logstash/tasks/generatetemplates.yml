@@ -11,10 +11,16 @@
       source: "logstash.yml.j2"
     - file: "config/pipelines.yml"
       source: "pipelines.yml.j2"
-    - file: "pipelines/pipeline_001.conf"
-      source: "pipeline_001.conf.j2"
-#    - file: "pipelines/pipeline_002.conf"
-#      source: "pipeline_002.conf.j2"
+
+- name: Generate pipeline configs
+  template:
+    src: "{{ item.type }}.conf.j2"
+    dest: "{{ logstash_config }}/pipelines/{{ item.name }}_{{ item.id }}.conf"
+    mode: "0644"
+    owner: "1000"
+    group: "1000"
+  when: item.enabled == True
+  loop: "{{ logstash_pipelines }}"
 
 - name: Generate log4j2.properties for Logstash node
   copy:

@@ -1,7 +1,7 @@
 input {
     tcp {
         codec => cef { delimiter => "\n" }
-        port => {{ logstash.ports[1] }}
+        port => {{ item.input_port }}
         ssl_enable => true
         ssl_cert => "/usr/share/logstash/certs/ssl_cert.crt"
         ssl_key => "/usr/share/logstash/certs/ssl_cert.key"
@@ -111,13 +111,13 @@ filter {
 
 output {
   elasticsearch {
-    hosts => [ "{{ groups['elastic_master_nodes']|join('", "')}}" ]
-    index => "arcsight-%{+YYYY.MM.dd}"
+    hosts => [ "{{ groups['elastic_hosts']|join('", "')}}" ]
+    index => "{{ item.output_index }}"
     ecs_compatibility => v1
     ssl => true
     ssl_certificate_verification => false
     cacert => "/usr/share/logstash/certs/ca.crt"
-    user => logstash_internal
-    password => {{logstash_internal_password}}
+    user => "{{ item.output_user }}"
+    password => "{{ item.output_password }}"
   }
 }

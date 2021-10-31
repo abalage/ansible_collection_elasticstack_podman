@@ -47,8 +47,25 @@ logstash:
     - "7505"
     - "9600"
     - "9601"
-  pipeline_ids:
-    - "tcp7500"
-    - "tcp7501"
+
+logstash_pipelines:
+    - name: arcsight
+      type: arcsight
+      id: "001"
+      enabled: True
+      input_port: "7500"
+      pipeline_workers: "1"
+      output_user: logstash_internal
+      output_password: "{{logstash_internal_password}}"
+      output_index: "arcsight-%{+YYYY.MM.dd}"
+    - name: beats
+      type: beats
+      id: "001"
+      enabled: True
+      input_port: "5045"
+      pipeline_workers: "1"
+      output_user: logstash_internal
+      output_password: "{{logstash_internal_password}}"
+      output_index: '%{[@metadata][beat]}-%{[@metadata][version]}'
 
 cluster_ca_crt: "{{ vault_cluster_ca_crt }}"

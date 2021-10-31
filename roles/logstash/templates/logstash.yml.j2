@@ -9,6 +9,8 @@ node.name: "{{inventory_hostname_short}}.logstash_{{logstash.instance_name}}"
 http.host: "{{logstash.ip_address}}"
 http.port: "{{logstash.api_port}}"
 
+config.reload.automatic: true
+
 {% if xpack_management is defined and xpack_management == true %}
 xpack.management.enabled: true
 xpack.management.elasticsearch.hosts: ["{{ groups['elastic_master_nodes']|join('", "') }}"]
@@ -16,7 +18,7 @@ xpack.management.elasticsearch.username: logstash_admin
 xpack.management.elasticsearch.password: "{{ logstash_admin_password }}"
 xpack.management.logstash.poll_interval: 5s
 xpack.management.pipeline.id:
-{% for id in logstash.pipeline_ids %}
+{% for id in logstash_pipelines %}
     - "{{id}}"
 {% endfor %}
 
