@@ -31,7 +31,6 @@ logstash_user_password: "{{vault_logstash_user_password | default(changeMe)}}"
 logstash:
   instance_name: "internal01"
   ip_address: "0.0.0.0"
-#  heap_size: 2g
   java_opts: "-Xms2g -Xmx2g"
   memory_limit: 2g
   cpu_limit: 2
@@ -52,7 +51,7 @@ logstash_pipelines:
     - name: arcsight
       type: arcsight
       id: "001"
-      enabled: True
+      enabled: False
       input_port: "7500"
       pipeline_workers: "1"
       output_user: logstash_internal
@@ -61,7 +60,7 @@ logstash_pipelines:
     - name: beats
       type: beats
       id: "001"
-      enabled: True
+      enabled: False
       input_port: "5045"
       pipeline_workers: "1"
       output_user: logstash_internal
