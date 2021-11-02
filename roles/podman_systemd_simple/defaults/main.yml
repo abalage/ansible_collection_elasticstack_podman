@@ -1,0 +1,9 @@
+---
+# defaults file for podman-systemd-simple
+service_files_dir: "/etc/systemd/system"
+container_stop_timeout: 30
+service_enabled: "yes"
+service_state: "started"
+
+# name: name of container or pod
+# type: pod or container
