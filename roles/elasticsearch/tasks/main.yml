@@ -21,46 +21,44 @@
 - name: Include task elastic_stack_podman.yml
   include_tasks: "elastic_stack_podman.yml"
 
-# https://www.middlewareinventory.com/blog/ansible-dict/#How_to_append_or_add_elements_into_ansible_dictionary
-- name: Include custom roles from inventory
-  set_fact:
-    es_roles: "{{ es_roles | combine(es_roles_custom, recursive=True) }}"
-  when: es_roles_custom is defined
-  tags: security
-
-- name: Include custom users from inventory
-  set_fact:
-    es_users: "{{ es_users | combine(es_users_custom, recursive=True) }}"
-  when: es_users_custom is defined
-  tags: security
-
-- name: Wait for Elasticsearch API to be available (timeout 300 sec)
-  wait_for:
-    host: "{{ inventory_hostname }}"
-    port: 9200
-    delay: 30
-    state: started
-    timeout: 300
-  tags: security
-
-- name: Wait for cluster state to be YELLOW or GREEN (timeout 300 sec)
-  uri:
-    url: "{{ es_api_uri }}/_cat/health"
-    return_content: true
-    validate_certs: "{{ es_validate_certs }}"
-    user: "{{es_api_basic_auth_username}}"
-    password: "{{es_api_basic_auth_password}}"
-    force_basic_auth: yes
-  register: response
-  until: "'red' not in response.content and ((response.content.find('yellow') != -1) or (response.content.find('green') != -1))"
-  delay: 5
-  retries: 60
-  tags: security
-
-- name: Include task elasticsearch-security-native.yml
-  include_tasks:
-    file: "elasticsearch-security-native.yml"
-    apply:
-      tags: security
+- name: Create roles and users
   tags: security
   run_once: True
+  block:
+    # https://www.middlewareinventory.com/blog/ansible-dict/#How_to_append_or_add_elements_into_ansible_dictionary
+    - name: Include custom roles from inventory
+      set_fact:
+        es_roles: "{{ es_roles | combine(es_roles_custom, recursive=True) }}"
+      when: es_roles_custom is defined
+
+    - name: Include custom users from inventory
+      set_fact:
+        es_users: "{{ es_users | combine(es_users_custom, recursive=True) }}"
+      when: es_users_custom is defined
+
+    - name: Wait for Elasticsearch API to be available (timeout 300 sec)
+      wait_for:
+        host: "{{ inventory_hostname }}"
+        port: 9200
+        delay: 30
+        state: started
+        timeout: 300
+
+    - name: Wait for cluster state to be YELLOW or GREEN (timeout 300 sec)
+      uri:
+        url: "{{ es_api_uri }}/_cat/health"
+        return_content: true
+        validate_certs: "{{ es_validate_certs }}"
+        user: "{{es_api_basic_auth_username}}"
+        password: "{{es_api_basic_auth_password}}"
+        force_basic_auth: yes
+      register: response
+      until: "'red' not in response.content and ((response.content.find('yellow') != -1) or (response.content.find('green') != -1))"
+      delay: 5
+      retries: 60
+
+    - name: Include task elasticsearch-security-native.yml
+      include_tasks:
+        file: "elasticsearch-security-native.yml"
+        apply:
+          tags: security
