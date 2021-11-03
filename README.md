@@ -9,7 +9,7 @@ Operation costs should be reduced by using Ansible for automation but without in
 It is admittedly a transition state between [Pets and Cattle](https://www.hava.io/blog/cattle-vs-pets-devops-explained).
 
 Containers are used for:
- - Limiting the system resources to components (thus complying to License in case of not the Basic license is used)
+ - Limiting the system resources (CPU, RAM) to components (also being able to comply to License)
  - As a 'packaging tool' for shipping the software with its dependencies.
  - Preparing landscape when situation is getting bigger. Ie. [Build Kubernetes pods with Podman play kube](https://www.redhat.com/sysadmin/podman-play-kube-updates)
 
@@ -17,31 +17,33 @@ Containers are used for:
 
 All components are based on the official Elasticsearch [Docker images](https://docker.elastic.co).
 
- - elasticsearch
- - kibana
- - filebeat (automatically configured for ingesting logs from all installed components)
- - metricbeat (automatically configured for monitoring all installed components)
- - logstash
+The following roles can be installed.
+
+ - Elasticsearch
+ - Kibana
+ - Filebeat (automatically configured for ingesting logs from all installed components)
+ - Metricbeat (automatically configured for monitoring all installed components)
+ - Logstash
 
 ### Host-networking
 Although you can use bridge networking (CNI), the current setup works best when used with host networking.
 
 Why to use host-networking:
  - Easy scalability (adding plus hosts by IP address is easy)
- - The lack of out-of-box DNS resolution between containers. (There is workaround by using dnsname CNI plugin manually from https://github.com/containers/dnsname)
- - Setting up overlay network over CNI between multiple nodes is not easy.
+ - The lack of oob DNS resolution between containers. There is a workaround by using dnsname CNI plugin from https://github.com/containers/dnsname however you still sticked to a single host.
+ - Setting up overlay network over CNI between multiple nodes is not easy, so as the management of the containers.
 
 ### Scalability
 Should you want to extend your landscape with multiple elasticsearch hosts.
 
-1. Just add the extra nodes to the inventory to their appropriate groups.
-2. Extend `host_vars` with the new hosts
+1. Just add the extra nodes to the inventory into their appropriate groups.
+2. Extend `host_vars` with a file representing the new host from the inventory
 3. Run ansible-playbook again.
 
 ### Reverse proxy
-You can use any kind of reverse proxies to provide access to Kibana or any other componets.
+You can use any kind of reverse proxies to provide access to Kibana or any other components.
 
-I suggest to use Traefik for auto-discovery. Kibana container is already labeled up for using with Traefik out of the box.
+I suggest to use Traefik for auto-discovery. Kibana container is labeled up for Traefik by default.
 
 Setting up podman for providing a Docker-compatible socket is easy.
 
@@ -77,12 +79,15 @@ There are two pipeline schemes already provided.
  - Arcsight
  - Beat
 
-Use them on your own risk.
+They are disabled by default.
+For usage please check `logstash_pipelines` in roles/logstash/defaults/main.yml
 
-## Automatic startup after host reboots
-Each roles creates systemd service units both for pods and containers.
+## Automatic startup of pods and container after host reboots
+Each roles creates a systemd service units both for pods and containers.
 
-SystemD will take care of automatically restarting the containers upon reboot and in case of '[on-failure](https://docs.podman.io/en/latest/markdown/podman-generate-systemd.1.html)'.
+Only the pod service unit will be 'enabled'.
+
+SystemD will take care of automatically restarting the pods and the containers upon reboot and in case of '[on-failure](https://docs.podman.io/en/latest/markdown/podman-generate-systemd.1.html)'.
 
 ### Migration after hosts are renamed
 
@@ -91,20 +96,22 @@ Hostnames are included in the name of persistent directories. Although it is not
 If you plan to rename hosts you should:
 1. Create a new inventory entry for the host(s)
 2. Issue `ansible-playbook -i new_inventory playbook.yml --tags createdirs`
-3. Stop the pods (and the orphan systemd service units)
+3. Stop the pods (and remove the orphan systemd service units in /etc/systemd/system/ )
 4. Manually move the data from old persistend directories to the recently created.
 5. Redeploy but now use the new inventory
 
-### Limitations
-
-Some features are not planned, while othere are on the TODO list.
-
-- (not planned) No license management is implemented.
-- (todo) There is no automated SSL certificate creation implemented. See [Howto create SSL certs](#howtossl) below.
-- (todo) Stale or orphan systemd units are not cleaned up
-- (todo) Kibana uses the instance certificate and key for HTTPS. It is a security antipattern.
-
 ## Usage
+
+### Persistent volumes
+
+The persistent volumes of containers are located under two directories:
+
+- /var/src/containers/volume/
+- /var/src/containers/config/
+
+These directories are the de facto locations for such purposes at least on RHEL systems and derivatives (SELinux contexts).
+
+Configuration files are generated from templates.
 
 ### Example playbook
 
@@ -222,10 +229,10 @@ FIXME
 
 There are two place where you should change the default values
 
-#### group_vars/elastic_stack/vault
+#### Group vars: 'elastic_stack/vault'
 
-Here you should add the required certificates in PEM format.
-
+Here you should add the required certificates in PEM format and other secrets.
+Do not forget to encrypt it by ansible-vault.
 
 ```yml
 ---
@@ -265,10 +272,13 @@ vault_kibana_savedobjects_encryptionkey: ""
 vault_kibana_reporting_encryptionkey: ""
 ```
 
-#### host_vars/{{inventory_hostname}}
+#### Host vars
 
-Not all of these are required as long as you make it with the default values.
-Please be careful when you change the key names as the (Python) dicts of 'elastic', 'kibana', and so on are not merged [when the variables are evaluated](https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable).
+Not all of these are required as long as the defaults are suitable for you.
+
+Please be careful when you change the key names in the (Python) dicts of 'elastic', 'kibana', and so on. They will not be merged [when the variables are evaluated](https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable).
+
+Also see [Limitations](#Limitations)
 
 ```yaml
 ---
@@ -351,26 +361,42 @@ filebeat:
     - "5066"
 ```
 
-### <a id="howtossl"></a>Howto create SSL certs
+## Securing Elasticsearch cluster
 
-Follow the steps to create certificates in PEM format.
+There is a multi layered security guide for Elasticsearch.
 
-1. https://www.elastic.co/guide/en/elasticsearch/reference/current/security-minimal-setup.html
-2. https://www.elastic.co/guide/en/elasticsearch/reference/current/security-basic-setup.html
+1. Create credentials for built-in users:
+   This is already handled by the playbooks.
+   Reference: https://www.elastic.co/guide/en/elasticsearch/reference/current/security-minimal-setup.html
+2. Configure TLS for transport layer. This is for traffic happening over TCP port 9300.
+   The playbooks handle these once you manually placed the certificates in PEM format into the inventory.
+   Reference: https://www.elastic.co/guide/en/elasticsearch/reference/current/security-basic-setup.html
+3. Configure TLS for HTTP REST API traffic. This is for traffic happening over TCP port 9200.
+   Most notable examples are Kibana and Beats.
+   This is not implemented yet by the playbooks. See [Limitations](#Limitations)
+   Reference: https://www.elastic.co/guide/en/elasticsearch/reference/current/security-basic-setup-https.html
+
+### Howto create SSL certs
+
+Follow the steps displayed on screen to create certificates in PEM format.
+
 ```bash
+ $ mkdir -p /tmp/certs && podman run --rm -ti -v /tmp/certs/:/tmp/certs/ elasticsearch:7.15.1 bash
  $ ./bin/elasticsearch-certutil ca --pem
- => elastic-stack-ca.zip
+ $ cp elastic-stack-ca.zip /tmp/certs/
  $ ./bin/elasticsearch-certutil cert --pem --ca-key ca/ca.key --ca-cert ca/ca.crt --name newchuck
- => certificate-bundle.zip
+ $ cp certificate-bundle.zip /tmp/certs/
  $ ./bin/elasticsearch-certutil http
- => elasticsearch-ssl-http.zip
+ $ cp elasticsearch-ssl-http.zip /tmp/certs/
 
 ```
-3. https://www.elastic.co/guide/en/elasticsearch/reference/current/security-basic-setup-https.html
+
+Unpack the archives to access the certificates and keys.
+You should add the appropriate certificates and keys into the inventory in `group_vars/elastic_stack/vault`.
 
 ## FAQ
 
-1. Why do not use docker-compose?
+1. Why not using docker-compose?
    - Why no to use [anything else than Docker](https://balagetech.com/convert-docker-compose-services-to-pods)?
 
 2. Why pods and not plain containers?
@@ -378,3 +404,26 @@ Follow the steps to create certificates in PEM format.
 
 3. Can I use my own container images?
    - Yes you can overwrite the necessary image references in the inventory.
+
+## Limitations
+
+Some features are not planned, while othere are on the TODO list.
+
+- (not planned) No license management is implemented.
+- (todo) There is no automated SSL certificate creation implemented. See [Howto create SSL certs](#howtossl) below.
+- (todo) Use separate certificates for HTTP REST traffic. Currently the same cert and key is used.
+- (todo) Stale or orphan systemd units are not cleaned up
+- (todo) Kibana uses the instance certificate and key for HTTPS. It is a security antipattern.
+- (todo) The whole dict (ie. `elastic`) needs to be copied into host_vars to overwrite it without breaking it. The `es_roles_custom` and `es_users_custom` dicts do already have a solution to that issue in elasticsearch/tasks/main.yml.
+- (todo) Place the credentials into keystores and do not leave them in plain text on the filesystem.
+
+## Development
+
+Should you want to adjust for example the configuraiton of a component, then have a look at the available options in the appropriate templates and defaults file.
+
+For example the default values of Elasticsearch can be found here: `~/.ansible/collections/ansible_collections/abalage/elasticstack_podman/roles/elasticsearch/defaults/main.yml`
+
+While the template which utilizes them can be found here: `~/.ansible/collections/ansible_collections/abalage/elasticstack_podman/roles/elasticsearch/templates/elasticsearch.yml.j2`
+
+In most cases it is enough to overwrite a variable's value in inventory.
+
