@@ -34,18 +34,33 @@
   when: es_users_custom is defined
   tags: security
 
-- name: Sleep 60 seconds
-  pause:
-    seconds: 60
+- name: Wait for Elasticsearch API to be available (timeout 300 sec)
+  wait_for:
+    host: "{{ inventory_hostname }}"
+    port: 9200
+    delay: 30
+    state: started
+    timeout: 300
   tags: security
 
-# TODO: rename this to match the original filename 'elasticsearch-security-native.yml'
-- name: Include task configure_builtin_users_passwords.yml
+- name: Wait for cluster state to be YELLOW or GREEN (timeout 300 sec)
+  uri:
+    url: "{{ es_api_uri }}/_cat/health"
+    return_content: true
+    validate_certs: "{{ es_validate_certs }}"
+    user: "{{es_api_basic_auth_username}}"
+    password: "{{es_api_basic_auth_password}}"
+    force_basic_auth: yes
+  register: response
+  until: "'red' not in response.content and ((response.content.find('yellow') != -1) or (response.content.find('green') != -1))"
+  delay: 5
+  retries: 60
+  tags: security
+
+- name: Include task elasticsearch-security-native.yml
   include_tasks:
     file: "elasticsearch-security-native.yml"
     apply:
       tags: security
   tags: security
   run_once: True
-#  environment:
-#    no_proxy: "{{es_api_host}}"
