@@ -84,7 +84,9 @@ path.logs: "/usr/share/elasticsearch/logs"
 #
 # Path to snapshot repository:
 #
+{% if elastic_snapshot_enabled %}
 path.repo: ["{{elastic_snapshot_repository}}"]
+{% endif %}
 #
 # ----------------------------------- Memory -----------------------------------
 #

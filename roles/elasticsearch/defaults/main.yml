@@ -10,6 +10,7 @@ timezone: "Europe/Budapest"
 elastic_config: "{{ container_conf_dir }}/{{inventory_hostname_short}}.es_{{elastic.instance_name}}"
 elastic_data: "{{ container_data_dir }}/{{inventory_hostname_short}}.es_{{elastic.instance_name}}"
 elastic_snapshot_repository: "/mnt/snapshot-repository"
+elastic_snapshot_enabled: False
 
 # container or pod networking
 elastic_pod_name: "elasticsearch"
