@@ -73,7 +73,9 @@
         zone: "{{ firewalld_zone }}"
       loop:
         "{{ logstash.ports }}"
-      when: logstash_pod_network == "host"
+      when:
+        - logstash_pod_network == "host"
+        - firewalld_enable == "yes"
 
     - name: Hand over pod and container mgmt to systemd
       vars:

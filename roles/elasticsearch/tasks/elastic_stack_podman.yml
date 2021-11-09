@@ -79,7 +79,9 @@
         state: enabled
         zone: "{{ firewalld_zone }}"
       loop: "{{ elastic.ports }}"
-      when: elastic_pod_network == "host"
+      when:
+        - elastic_pod_network == "host"
+        - firewalld_enable == "yes"
 
     - name: Hand over pod and container mgmt to systemd
       vars:

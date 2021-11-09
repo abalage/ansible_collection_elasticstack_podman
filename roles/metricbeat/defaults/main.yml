@@ -3,6 +3,7 @@
 state: "started"
 recreate: "no"
 firewalld_zone: "public"
+firewalld_enable: "no"
 timezone: "Europe/Budapest"
 
 # networking
