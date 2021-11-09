@@ -45,7 +45,7 @@ elastic:
   cpu_limit: 1
   heap_size: "3g"
   java_opts: "-Xms3g -Xmx3g"
-  ip_address: "{{service_ip}}"
+  ip_address: "0.0.0.0"
   rack_id: A1
   server_room: B1
 

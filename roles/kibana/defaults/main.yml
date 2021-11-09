@@ -23,7 +23,7 @@ kibana_fqdn: "{{vault_kibana_fqdn | default(example.com)}}"
 kibana_system_password: "{{ vault_kibana_system_password | default(changeMe) }}"
 
 kibana:
-  ip_address: "{{ service_ip }}"
+  ip_address: "0.0.0.0"
   java_opts: "-Xms2g -Xmx2g"
   instance_name: "internal01"
   memory_limit: 2g

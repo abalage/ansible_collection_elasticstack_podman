@@ -20,8 +20,8 @@
         recreate: "{{ recreate }}"
         network: "{{ elastic_pod_network }}"
         publish:
-          - "{{ service_ip}}:{{ elastic.ports[0] }}:{{ elastic.ports[0] }}"
-          - "{{ service_ip}}:{{ elastic.ports[1] }}:{{ elastic.ports[1] }}"
+          - "{{ elastic.ip_address }}:{{ elastic.ports[0] }}:{{ elastic.ports[0] }}"
+          - "{{ elastic.ip_address }}:{{ elastic.ports[1] }}:{{ elastic.ports[1] }}"
       when: elastic_pod_network == "bridge"
 
     - name: Run Elastic container

@@ -184,7 +184,7 @@ playbook.yml
 example.com    ansible_connection=local
 
 [all:vars]
-service_ip=172.18.0.1
+service_ip=0.0.0.0
 firewalld_zone="internal"
 timezone="Europe/Budapest"
 
