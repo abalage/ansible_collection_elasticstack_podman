@@ -24,6 +24,7 @@
 - name: Create roles and users
   tags: security
   run_once: True
+  when: not ansible_check_mode
   block:
     # https://www.middlewareinventory.com/blog/ansible-dict/#How_to_append_or_add_elements_into_ansible_dictionary
     - name: Include custom roles from inventory
