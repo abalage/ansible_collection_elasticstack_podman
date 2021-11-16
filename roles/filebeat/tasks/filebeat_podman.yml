@@ -31,6 +31,7 @@
         state: "{{ state }}"
         user: root
         recreate: "{{ recreate }}"
+        network: "{{filebeat_pod_network}}"
         ## by default json loggin is used plus filebeat
         ## log driver k8s-file
         #log_driver: k8s-file
@@ -69,6 +70,7 @@
         state: "{{ state }}"
         user: root
         recreate: "{{ recreate }}"
+        network: "{{filebeat_pod_network}}"
         ## by default json loggin is used plus filebeat
         ## log driver k8s-file
         #log_driver: k8s-file

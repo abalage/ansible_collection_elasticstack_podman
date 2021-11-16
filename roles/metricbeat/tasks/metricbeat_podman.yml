@@ -30,6 +30,7 @@
         image: "{{metricbeat_image}}:{{metricbeat_version}}"
         state: "{{ state }}"
         recreate: "{{ recreate }}"
+        network: "{{metricbeat_pod_network}}"
         label:
           process=metricbeat
         memory: "{{metricbeat.memory_limit}}"
@@ -58,6 +59,7 @@
         image: "{{metricbeat_image}}:{{metricbeat_version}}"
         state: "{{ state }}"
         recreate: "{{ recreate }}"
+        network: "{{metricbeat_pod_network}}"
         label:
           process=metricbeat
         expose: "{{ metricbeat.ports }}"
