@@ -32,6 +32,7 @@
         state: started
         stop_timeout: 90
         recreate: "{{ recreate }}"
+        network: "{{elastic_pod_network}}"
         ## by default log4j2.properties is used plus filebeat
         ## log driver k8s-file
         #log_driver: k8s-file
