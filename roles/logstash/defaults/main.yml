@@ -27,6 +27,10 @@ logstash_internal_password: "{{vault_logstash_internal_password | default(change
 logstash_system_password: "{{vault_logstash_system_password | default(changeMe)}}"
 logstash_user_password: "{{vault_logstash_user_password | default(changeMe)}}"
 
+# should be a separate cert than instance key but we're lazy now
+logstash_ssl_cert: "{{ vault_cluster_instance_crt }}"
+logstash_ssl_key: "{{ vault_cluster_instance_key }}"
+
 # Sizing help: https://www.elastic.co/guide/en/logstash/current/jvm-settings.html
 # https://www.elastic.co/guide/en/logstash/current/tuning-logstash.html
 logstash:
