@@ -9,8 +9,8 @@
   loop:
     - file: ca.crt
       source: "{{ cluster_ca_crt }}"
-#    - file: ssl_cert.crt
-#      source: "{{ ssl_cert}}"
-#    - file: ssl_cert.key
-#      source: "{{ ssl_key }}"
+    - file: ssl_cert.crt
+      source: "{{ logstash_ssl_cert}}"
+    - file: ssl_cert.key
+      source: "{{ logstash_ssl_key }}"
   no_log: true
