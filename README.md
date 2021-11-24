@@ -383,11 +383,10 @@ Follow the steps displayed on screen to create certificates in PEM format.
 ```bash
  $ mkdir -p /tmp/certs && podman run --rm -ti -v /tmp/certs/:/tmp/certs/ elasticsearch:7.15.1 bash
  $ ./bin/elasticsearch-certutil ca --pem
- $ cp elastic-stack-ca.zip /tmp/certs/
- $ ./bin/elasticsearch-certutil cert --pem --ca-key ca/ca.key --ca-cert ca/ca.crt --name newchuck
- $ cp certificate-bundle.zip /tmp/certs/
+ $ unzip elastic-stack-ca.zip
+ $ ./bin/elasticsearch-certutil cert --pem --ca-key ca/ca.key --ca-cert ca/ca.crt --name example.com
  $ ./bin/elasticsearch-certutil http
- $ cp elasticsearch-ssl-http.zip /tmp/certs/
+ $ cp *.zip /tmp/certs/
 
 ```
 
