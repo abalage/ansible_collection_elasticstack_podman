@@ -9,7 +9,7 @@ server.publicBaseUrl: "https://{{kibana_fqdn}}"
 
 elasticsearch.hosts:
 {% for host in groups['elastic_master_nodes'] %}
-  - https://{{ host }}:9200
+  - https://{{ hostvars[host]['service_ip'] }}:9200
 {% endfor %}
 # to accept internal CA certificate that issued the cluster certificates
 elasticsearch.ssl.certificateAuthorities: ["/usr/share/kibana/config/ca.crt"]
