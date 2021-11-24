@@ -12,15 +12,15 @@ kibana_data: "{{ container_data_dir }}/{{inventory_hostname_short}}.kibana_{{kib
 
 # container defaults
 kibana_image: "docker.elastic.co/kibana/kibana"
-kibana_version: "{{ elk_version | default(7.14.1)}}"
+kibana_version: "{{ elk_version | default('7.14.1')}}"
 
 kibana_pod_name: "kibana"
 kibana_pod_network: "host"
 
-kibana_fqdn: "{{vault_kibana_fqdn | default(example.com)}}"
+kibana_fqdn: "{{vault_kibana_fqdn | default('example.com')}}"
 
 # service level settings (shared between role elasticsearch and role kibana)
-kibana_system_password: "{{ vault_kibana_system_password | default(changeMe) }}"
+kibana_system_password: "{{ vault_kibana_system_password | default('changeMe') }}"
 
 kibana:
   ip_address: "0.0.0.0"
