@@ -39,7 +39,7 @@
 
     - name: Wait for Elasticsearch API to be available (timeout 300 sec)
       wait_for:
-        host: "{{ inventory_hostname }}"
+        host: "{{ es_api_host }}"
         port: 9200
         delay: 30
         state: started
