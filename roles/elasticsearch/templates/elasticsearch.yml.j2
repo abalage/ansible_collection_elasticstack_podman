@@ -37,8 +37,6 @@ network.host: "{{ elastic.ip_address }}"
 {% if elastic.deployment_type is defined %}
 discovery.type: "{{elastic.deployment_type}}"
 {% else %}
-#discovery.seed_hosts: ["{{ groups['elastic_hosts']|join('", "') }}"]
-#cluster.initial_master_nodes: ["{{ groups['elastic_master_nodes']|join('", "') }}"]
 discovery.seed_hosts:
 {% for host in groups['elastic_hosts'] %}
   - {{ hostvars[host]['service_ip'] }}

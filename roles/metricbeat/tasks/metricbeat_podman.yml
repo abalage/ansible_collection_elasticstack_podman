@@ -44,7 +44,7 @@
         volume:
           - "{{ metricbeat_config }}/config/metricbeat.docker.yml:/usr/share/metricbeat/metricbeat.yml:z"
           - "{{ metricbeat_config }}/certs/cluster_ca.crt:/etc/pki/root/ca.pem:z"
-        command: setup -E setup.kibana.host={{ groups['kibana_hosts'][0]}}:5601 -E output.elasticsearch.hosts=["{{metricbeat.monitoring_cluster_url}}"]
+        command: setup -E setup.kibana.host={{ hostvars[groups['kibana_hosts'][0]]['service_ip'] }}:5601 -E output.elasticsearch.hosts=["{{metricbeat.monitoring_cluster_url}}"]
       register: result
       until: result is success
       retries: 3

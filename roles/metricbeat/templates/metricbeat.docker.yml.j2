@@ -35,8 +35,8 @@ metricbeat.modules:
     - ml_job
   period: 10s
   hosts:
-{% for host in groups['elastic_master_nodes'] %}
-    - {{metricbeat.elastic_http_scheme}}://{{host}}:{{es_api_port}}
+{% for host in groups['elastic_hosts'] %}
+    - {{metricbeat.elastic_http_scheme}}://{{ hostvars[host]['service_ip'] }}:{{es_api_port}}
 {% endfor %}
 
   username: "{{metricbeat.monitoring_read_user_name}}"
@@ -53,7 +53,7 @@ metricbeat.modules:
   period: 10s
   hosts:
 {% for host in groups['kibana_hosts'] %}
-    - {{metricbeat.kibana_http_scheme}}://{{host}}:5601
+    - {{metricbeat.kibana_http_scheme}}://{{ hostvars[host]['service_ip'] }}:5601
 {% endfor %}
 
   username: "{{metricbeat.monitoring_read_user_name}}"
@@ -73,8 +73,8 @@ metricbeat.modules:
   period: 10s
   hosts:
 {% for host in groups['logstash_hosts'] %}
-    - {{metricbeat.logstash_http_scheme}}://{{host}}:9600
-    - {{metricbeat.logstash_http_scheme}}://{{host}}:9601
+    - {{metricbeat.logstash_http_scheme}}://{{ hostvars[host]['service_ip'] }}:9600
+    - {{metricbeat.logstash_http_scheme}}://{{ hostvars[host]['service_ip'] }}:9601
 {% endfor %}
 #  username: "{{metricbeat.monitoring_read_user_name}}"
 #  password: "{{metricbeat.monitoring_read_user_pass}}"
@@ -94,7 +94,7 @@ metricbeat.modules:
   period: 10s
   hosts:
 {% for host in groups['filebeat_hosts'] %}
-    - {{metricbeat.beat_http_scheme}}://{{host}}:5066
+    - {{metricbeat.beat_http_scheme}}://{{ hostvars[host]['service_ip'] }}:5066
 {% endfor %}
   ssl.certificate_authorities: ["/etc/pki/root/ca.pem"]
   ssl.verification_mode: "{{metricbeat.certificate_validation}}"
@@ -110,7 +110,7 @@ metricbeat.modules:
   period: 10s
   hosts:
 {% for host in groups['metricbeat_hosts'] %}
-    - {{metricbeat.beat_http_scheme}}://{{host}}:5067
+    - {{metricbeat.beat_http_scheme}}://{{ hostvars[host]['service_ip'] }}:5067
 {% endfor %}
 
   ssl.certificate_authorities: ["/etc/pki/root/ca.pem"]

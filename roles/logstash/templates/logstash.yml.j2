@@ -13,7 +13,11 @@ config.reload.automatic: true
 
 {% if xpack_management is defined and xpack_management == true %}
 xpack.management.enabled: true
-xpack.management.elasticsearch.hosts: ["{{ groups['elastic_master_nodes']|join('", "') }}"]
+xpack.management.elasticsearch.hosts:
+{% for host in groups['elastic_hosts'] %}
+    - {{metricbeat.elastic_http_scheme}}://{{ hostvars[host]['service_ip'] }}:{{es_api_port}}
+{% endfor %}
+
 xpack.management.elasticsearch.username: logstash_admin
 xpack.management.elasticsearch.password: "{{ logstash_admin_password }}"
 xpack.management.logstash.poll_interval: 5s

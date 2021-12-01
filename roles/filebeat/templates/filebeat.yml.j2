@@ -1088,7 +1088,10 @@ output.elasticsearch:
   # Scheme and port can be left out and will be set to the default (http and 9200)
   # In case you specify and additional path, the scheme is required: http://localhost:9200/path
   # IPv6 addresses should always be defined as: https://[2001:db8::1]:9200
-  hosts: [ "{{ groups['elastic_master_nodes']|join('", "') }}" ]
+  hosts:
+{% for host in groups['elastic_hosts'] %}
+    - {{ hostvars[host]['service_ip'] }}
+{% endfor %}
 
   # Set gzip compression level.
   #compression_level: 0
@@ -1939,7 +1942,10 @@ setup.kibana:
   # Scheme and port can be left out and will be set to the default (http and 5601)
   # In case you specify and additional path, the scheme is required: http://localhost:5601/path
   # IPv6 addresses should always be defined as: https://[2001:db8::1]:5601
-  host: "https://{{ groups['kibana_hosts'][0] }}:{{ kibana.ports[0] }}"
+  host:
+{% for host in groups['kibana_hosts'] %}
+    - {{ hostvars[host]['service_ip'] }}:{{ kibana.ports[0] }}
+{% endfor %}
 
   # Optional protocol and basic auth credentials.
   protocol: "https"

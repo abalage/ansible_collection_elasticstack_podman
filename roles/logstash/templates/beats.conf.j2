@@ -6,7 +6,7 @@ input {
 
 output {
   elasticsearch {
-    hosts => [ "{{ groups['elastic_hosts']|join('", "')}}" ]
+    hosts => [{% for host in groups['elastic_hosts'] %}"{{hostvars[host]['service_ip']}}"{{ ', ' if not loop.last else '' }}{% endfor %}]
     index => "{{ item.output_index }}"
     ecs_compatibility => v1
     ssl => true
