@@ -75,7 +75,7 @@
       loop: "{{ kibana.ports }}"
       when:
         - kibana_pod_network == "host"
-        - firewalld_enable == "no"
+        - firewalld_enabled | bool
 
     - name: Hand over pod and container mgmt to systemd
       vars:

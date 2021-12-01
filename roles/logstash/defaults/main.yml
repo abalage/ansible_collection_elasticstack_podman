@@ -2,8 +2,8 @@
 # defaults file for logstash
 state: "started"
 recreate: "no"
-firewalld_enable: "no"
 firewalld_zone: "public"
+firewalld_enabled: "no"
 timezone: "Europe/Budapest"
 
 # networking

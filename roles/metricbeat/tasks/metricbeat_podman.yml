@@ -90,7 +90,7 @@
       loop: "{{metricbeat.ports}}"
       when:
         - metricbeat_pod_network == "host"
-        - firewalld_enable == "yes"
+        - firewalld_enabled | bool
 
     - name: Hand over pod and container mgmt to systemd
       vars:
