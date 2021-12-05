@@ -381,7 +381,7 @@ There is a multi layered security guide for Elasticsearch.
 Follow the steps displayed on screen to create certificates in PEM format.
 
 ```bash
- $ mkdir -p /tmp/certs && podman run --rm -ti -v /tmp/certs/:/tmp/certs/ elasticsearch:7.15.1 bash
+ $ mkdir -p /tmp/certs && podman run --rm -ti -v /tmp/certs/:/tmp/certs/ docker.elastic.co/elasticsearch/elasticsearch:7.15.1 bash
  $ ./bin/elasticsearch-certutil ca --pem
  $ unzip elastic-stack-ca.zip
  $ ./bin/elasticsearch-certutil cert --pem --ca-key ca/ca.key --ca-cert ca/ca.crt --name example.com
