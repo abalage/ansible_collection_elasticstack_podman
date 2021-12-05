@@ -82,13 +82,12 @@
         #log_opt:
         #  tag=filebeat|{{ '{{' }}.ImageName{{ '}}' }}|podman
         label:
-          process: filebeat
+          process=filebeat
         expose: "{{filebeat.ports}}"
         memory: "{{filebeat.memory_limit}}"
         cpus: "{{filebeat.cpu_limit}}"
         env:
           TZ: "{{ timezone }}"
-          NO_PROXY: "{{no_proxy}}"
         volume:
           - "{{ filebeat_config }}/certs/ca.crt:/usr/share/filebeat/config/ca.crt:ro,z"
           - "{{ filebeat_config }}/certs/kibana_signing_ca.crt:/usr/share/filebeat/config/kibana_signing_ca.crt:ro,z"

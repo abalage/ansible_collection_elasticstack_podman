@@ -40,7 +40,6 @@
           ELASTICSEARCH_HOSTS: "{{metricbeat.monitoring_cluster_url}}"
           ELASTICSEARCH_USERNAME: "{{ metricbeat.monitoring_write_user_name }}"
           ELASTICSEARCH_PASSWORD: "{{ metricbeat.monitoring_write_user_pass }}"
-          NO_PROXY: "{{no_proxy}}"
         volume:
           - "{{ metricbeat_config }}/config/metricbeat.docker.yml:/usr/share/metricbeat/metricbeat.yml:z"
           - "{{ metricbeat_config }}/certs/cluster_ca.crt:/etc/pki/root/ca.pem:z"
