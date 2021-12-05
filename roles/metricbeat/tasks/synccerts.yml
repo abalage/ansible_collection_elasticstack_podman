@@ -8,6 +8,8 @@
     owner: "1000"
     group: "1000"
   loop:
-    - file: cluster_ca.crt
-      source: "{{ cluster_ca_crt }}"
+    - file: transport_ca.crt
+      source: "{{ xpack_transport_ca }}"
+    - file: kibana_signing_ca.crt
+      source: "{{ server_ssl_ca }}"
   no_log: true

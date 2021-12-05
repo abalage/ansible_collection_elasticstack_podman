@@ -1,5 +1,5 @@
 ---
-- name: Copy the certificate used to issue the Elasticsearch node certificates to Kibana servers
+- name: Copy the X.509 certificates for transport and http security
   copy:
     content: "{{ item.source }}"
     dest: "{{ elastic_config }}/certs/{{ item.file }}"
@@ -7,10 +7,20 @@
     owner: "1000"
     group: "1000"
   loop:
-    - file: ca.crt
-      source: "{{ cluster_ca_crt }}"
+    - file: transport_ca.crt
+      source: "{{ xpack_transport_ca }}"
     - file: instance.crt
-      source: "{{ cluster_instance_crt}}"
+      source: "{{ xpack_transport_ssl_cert}}"
     - file: instance.key
-      source: "{{ cluster_instance_cert_key }}"
+      source: "{{ xpack_transport_ssl_key }}"
+    - file: instance.p12
+      source: "{{ xpack_transport_ssl_keystore }}"
+    - file: http_ca.crt
+      source: "{{ xpack_http_ca }}"
+    - file: http.crt
+      source: "{{ xpack_http_ssl_cert}}"
+    - file: http.key
+      source: "{{ xpack_http_ssl_key }}"
+    - file: http.p12
+      source: "{{ xpack_http_ssl_keystore }}"
   no_log: true

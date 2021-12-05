@@ -24,6 +24,6 @@ filebeat:
   ports:
     - "5066"
 
-cluster_ca_crt: "{{ vault_cluster_ca_crt }}"
-
-kibana_signing_ca_crt: "{{ vault_cluster_ca_crt }}"
+xpack_http_ca: "{{ vault_xpack_http_ca }}"
+xpack_http_ssl_verification_mode: "certificate"
+server_ssl_ca: "{{ vault_server_ssl_ca }}"

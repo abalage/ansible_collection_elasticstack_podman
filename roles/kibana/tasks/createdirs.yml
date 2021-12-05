@@ -7,7 +7,6 @@
     owner: "1000"
     group: "1000"
     mode: '0755'
-    recurse: yes
   loop:
     - "{{kibana_config}}/config"
     - "{{kibana_config}}/certs"

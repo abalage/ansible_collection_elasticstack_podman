@@ -63,9 +63,7 @@
           - "{{ elastic_data }}/snapshots:{{elastic_snapshot_repository}}"
           - "{{ elastic_config }}/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,z"
           - "{{ elastic_config }}/config/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties:ro,z"
-          - "{{ elastic_config }}/certs/ca.crt:/usr/share/elasticsearch/config/certificates/ca.crt:ro,z"
-          - "{{ elastic_config }}/certs/instance.crt:/usr/share/elasticsearch/config/certificates/instance.crt:ro,z"
-          - "{{ elastic_config }}/certs/instance.key:/usr/share/elasticsearch/config/certificates/instance.key:ro,z"
+          - "{{ elastic_config }}/certs:/usr/share/elasticsearch/config/certificates:ro,z"
       register: result
       until: result is success
       retries: 3

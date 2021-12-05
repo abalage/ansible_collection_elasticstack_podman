@@ -51,7 +51,7 @@
           TZ: "{{ timezone }}"
           NO_PROXY: "{{no_proxy}}"
         volume:
-          - "{{ filebeat_config }}/certs/ca.crt:/usr/share/filebeat/config/ca.crt:ro,z"
+          - "{{ filebeat_config }}/certs/http_ca.crt:/usr/share/filebeat/config/http_ca.crt:ro,z"
           - "{{ filebeat_config }}/certs/kibana_signing_ca.crt:/usr/share/filebeat/config/kibana_signing_ca.crt:ro,z"
           - "{{ filebeat_config }}/config/filebeat.yml:/usr/share/filebeat/filebeat.yml:z"
           - "{{ filebeat_data }}/logs:/var/log/filebeat:z"
@@ -89,7 +89,7 @@
         env:
           TZ: "{{ timezone }}"
         volume:
-          - "{{ filebeat_config }}/certs/ca.crt:/usr/share/filebeat/config/ca.crt:ro,z"
+          - "{{ filebeat_config }}/certs/http_ca.crt:/usr/share/filebeat/config/http_ca.crt:ro,z"
           - "{{ filebeat_config }}/certs/kibana_signing_ca.crt:/usr/share/filebeat/config/kibana_signing_ca.crt:ro,z"
           - "{{ filebeat_config }}/config/filebeat.yml:/usr/share/filebeat/filebeat.yml:z"
           - "{{ filebeat_data }}/logs:/var/log/filebeat:z"

@@ -42,8 +42,8 @@
           ELASTICSEARCH_PASSWORD: "{{ metricbeat.monitoring_write_user_pass }}"
         volume:
           - "{{ metricbeat_config }}/config/metricbeat.docker.yml:/usr/share/metricbeat/metricbeat.yml:z"
-          - "{{ metricbeat_config }}/certs/cluster_ca.crt:/etc/pki/root/ca.pem:z"
-        command: setup -E setup.kibana.host={{ hostvars[groups['kibana_hosts'][0]]['service_ip'] }}:5601 -E output.elasticsearch.hosts=["{{metricbeat.monitoring_cluster_url}}"]
+          - "{{ metricbeat_config }}/certs/transport_ca.crt:/usr/share/metricbeat/transport_ca.crt:ro,z"
+        command: setup -e --index-management --pipelines --dashboards
       register: result
       until: result is success
       retries: 3
@@ -72,8 +72,8 @@
         user: root
         volume:
           - "{{ metricbeat_config }}/config/metricbeat.docker.yml:/usr/share/metricbeat/metricbeat.yml:z"
-          - "{{ metricbeat_config }}/certs/cluster_ca.crt:/etc/pki/root/ca.pem:z"
-        command: -e -E output.elasticsearch.hosts=["{{metricbeat.monitoring_cluster_url}}"]
+          - "{{ metricbeat_config }}/certs/transport_ca.crt:/usr/share/metricbeat/transport_ca.crt:ro,z"
+          - "{{ metricbeat_config }}/certs/kibana_signing_ca.crt:/usr/share/metricbeat/kibana_signing_ca.crt:ro,z"
       register: result
       until: result is success
       retries: 3

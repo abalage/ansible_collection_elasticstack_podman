@@ -39,19 +39,11 @@ kibana_reporting_encryptionkey: "{{vault_kibana_reporting_encryptionkey}}"
 # KIBANA related certificates:
 # SHOULD BE ACCESSIBLE FOR BEATS TOO
 # what about putting into "group_vars/elastic_stack"
-
-# CA certificate (chain) that signed the SSL server certificate used by Kibana
-# For now, make it the same as the cluster CA certificate. If it is different, copy the cert here.
-
-cluster_ca_crt: "{{ vault_cluster_ca_crt }}"
-
-kibana_signing_ca_crt: "{{ vault_cluster_ca_crt }}"
-
-# SSL server certificate used by Kibana to encrypt communication
-# For now, make it the same as the cluster instance certificate. If it is different, copy the cert here.
-kibana_ssl_certificate: "{{ vault_cluster_instance_crt }}"
-
-# SSL server certificate private key used by Kibana to encrypt communication
-# For now, make it the same as the vaulted instance certificate key. If it is different, copy the key (preferably vaulted) here.
-kibana_ssl_certificate_key: "{{ vault_cluster_instance_cert_key }}"
-
+server_ssl_ca: "{{ vault_server_ssl_ca }}"
+server_ssl_cert_format: "pkcs12"
+server_ssl_keystore: "{{ vault_server_ssl_keystore | default('na') }}"
+server_ssl_keystore_password: "{{ vault_server_ssl_keystore_password }}"
+server_ssl_cert: "{{ vault_server_ssl_cert | default('na') }}"
+server_ssl_key: "{{ vault_server_ssl_key | default('na') }}"
+elasticsearch_ssl_ca: "{{ vault_elasticsearch_ssl_ca }}"
+elasticsearch_ssl_verification_mode: "certificate"

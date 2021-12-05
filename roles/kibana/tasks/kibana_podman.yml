@@ -54,11 +54,8 @@
         cpus: "{{kibana.cpu_limit}}"
         volume:
           - "{{ kibana_data }}/logs:/var/log/kibana:z"
-          - "{{ kibana_config }}/config/kibana.yml:/usr/share/kibana/config/kibana.yml:z"
-          - "{{ kibana_config }}/certs/ca.crt:/usr/share/kibana/config/ca.crt:z"
-          - "{{ kibana_config }}/certs/ssl.crt:/usr/share/kibana/config/ssl.crt:z"
-          - "{{ kibana_config }}/certs/ssl.key:/usr/share/kibana/config/ssl.key:z"
-          - "{{ kibana_config }}/certs/kibana_signing_ca.crt:/usr/share/kibana/config/kibana_signing_ca.crt:z"
+          - "{{ kibana_config }}/config/kibana.yml:/usr/share/kibana/config/kibana.yml:ro,z"
+          - "{{ kibana_config }}/certs:/usr/share/kibana/config/certs:ro,z"
       register: result
       until: result is success
       retries: 3

@@ -52,19 +52,29 @@ cluster.initial_master_nodes:
 xpack.security.enabled: true
 xpack.security.authc.api_key.enabled: true
 xpack.security.transport.ssl.enabled: true
-xpack.security.transport.ssl.verification_mode: none
-#xpack.security.transport.ssl.verification_mode=certificate
-xpack.security.transport.ssl.certificate_authorities: [ "/usr/share/elasticsearch/config/certificates/ca.crt" ]
+xpack.security.transport.ssl.verification_mode: "{{ xpack_transport_ssl_verification_mode }}"
+xpack.security.transport.ssl.certificate_authorities: [ "/usr/share/elasticsearch/config/certificates/transport_ca.crt" ]
+
+{% if xpack_transport_cert_format == "pem" %}
 xpack.security.transport.ssl.certificate: /usr/share/elasticsearch/config/certificates/instance.crt
 xpack.security.transport.ssl.key: /usr/share/elasticsearch/config/certificates/instance.key
+{% else %}
+xpack.security.transport.ssl.keystore.path: /usr/share/elasticsearch/config/certificates/instance.p12
+xpack.security.transport.ssl.keystore.password: "{{ xpack_transport_ssl_keystore_password }}"
+{% endif %}
+
 xpack.security.http.ssl.enabled: true
-xpack.security.http.ssl.verification_mode: none
-#xpack.security.http.ssl.verification_mode=certificate
-xpack.security.http.ssl.certificate_authorities: [ "/usr/share/elasticsearch/config/certificates/ca.crt" ]
-# FIXME it is wrong to use the same certs for Kibana, use "certutil http"
-# https://www.elastic.co/guide/en/elasticsearch/reference/7.14/security-basic-setup-https.html
-xpack.security.http.ssl.certificate: /usr/share/elasticsearch/config/certificates/instance.crt
-xpack.security.http.ssl.key: /usr/share/elasticsearch/config/certificates/instance.key
+xpack.security.http.ssl.verification_mode: "{{ xpack_http_ssl_verification_mode }}"
+xpack.security.http.ssl.certificate_authorities: [ "/usr/share/elasticsearch/config/certificates/http_ca.crt" ]
+
+{% if xpack_http_cert_format == "pem" %}
+xpack.security.http.ssl.certificate: /usr/share/elasticsearch/config/certificates/http.crt
+xpack.security.http.ssl.key: /usr/share/elasticsearch/config/certificates/http.key
+{% else %}
+xpack.security.http.ssl.keystore.path: /usr/share/elasticsearch/config/certificates/http.p12
+xpack.security.http.ssl.keystore.password: "{{ xpack_http_ssl_keystore_password }}"
+{% endif %}
+
 xpack.security.audit.enabled: false
 
 {% if monitoring_cluster %}

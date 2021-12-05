@@ -51,34 +51,53 @@ elastic:
   server_room: B1
 
 #### Certificates ####
-# Internal Certificate Authority, used to issue internal certificates
-cluster_ca_crt: "{{vault_cluster_ca_crt}}"
-# Cluster node certificate chain, signed by the CA above. This is installed on all Elasticsearch nodes.
-# This is a SAN certificate, listing the names of all of the nodes.
-# It is used both for intra-cluster transport encryption and also HTTPS API encryption.
-cluster_instance_crt: "{{vault_cluster_instance_crt}}"
-# Cluster node key to above certificate. This is installed on all Elasticsearch nodes
-# and enable them to encrypt intra-cluster transport communication as well as HTTPS APIs.
-cluster_instance_cert_key: "{{vault_cluster_instance_cert_key}}"
 
-## Logstash related certificates:
-#ssl_cert: "{{ cluster_instance_crt }}"
-#ssl_key: "{{ cluster_instance_cert_key }}"
+# for traffic over port 9300
+xpack_transport_ca: "{{ vault_xpack_transport_ca }}"
+xpack_transport_cert_format: "pkcs12"
+xpack_transport_ssl_keystore: "{{ vault_xpack_transport_ssl_keystore | default('na') }}"
+xpack_transport_ssl_keystore_password: "{{ vault_xpack_transport_ssl_keystore_password }}"
+xpack_transport_ssl_cert: "{{ vault_xpack_transport_ssl_cert | default('na') }}"
+xpack_transport_ssl_key: "{{ vault_xpack_transport_ssl_key | default('na') }}"
+xpack_transport_ssl_verification_mode: "certificate"
 
-# KIBANA related certificates:
-# SHOULD BE ACCESSIBLE TO BEATS TOO
+# for traffic over port 9200
+xpack_http_ca: "{{ vault_xpack_http_ca }}"
+xpack_http_cert_format: "pkcs12"
+xpack_http_ssl_keystore: "{{ vault_xpack_http_ssl_keystore | default('na') }}"
+xpack_http_ssl_keystore_password: "{{ vault_xpack_http_ssl_keystore_password }}"
+xpack_http_ssl_cert: "{{ vault_xpack_http_ssl_cert | default('na') }}"
+xpack_http_ssl_key: "{{ vault_xpack_http_ssl_key | default('na') }}"
+xpack_http_ssl_verification_mode: "certificate"
 
-# CA certificate (chain) that signed the SSL server certificate used by Kibana
-# For now, make it the same as the cluster CA certificate. If it is different, copy the cert here.
-kibana_signing_ca_crt: "{{ cluster_ca_crt }}"
-
-# SSL server certificate used by Kibana to encrypt communication
-# For now, make it the same as the cluster instance certificate. If it is different, copy the cert here.
-kibana_ssl_certificate: "{{ cluster_instance_crt }}"
-
-# SSL server certificate private key used by Kibana to encrypt communication
-# For now, make it the same as the vaulted instance certificate key. If it is different, copy the key (preferably vaulted) here.
-kibana_ssl_certificate_key: "{{ cluster_instance_cert_key }}"
+## Internal Certificate Authority, used to issue internal certificates
+#cluster_ca_crt: "{{vault_cluster_ca_crt}}"
+## Cluster node certificate chain, signed by the CA above. This is installed on all Elasticsearch nodes.
+## This is a SAN certificate, listing the names of all of the nodes.
+## It is used both for intra-cluster transport encryption and also HTTPS API encryption.
+#cluster_instance_crt: "{{vault_cluster_instance_crt}}"
+## Cluster node key to above certificate. This is installed on all Elasticsearch nodes
+## and enable them to encrypt intra-cluster transport communication as well as HTTPS APIs.
+#cluster_instance_cert_key: "{{vault_cluster_instance_cert_key}}"
+#
+### Logstash related certificates:
+##ssl_cert: "{{ cluster_instance_crt }}"
+##ssl_key: "{{ cluster_instance_cert_key }}"
+#
+## KIBANA related certificates:
+## SHOULD BE ACCESSIBLE TO BEATS TOO
+#
+## CA certificate (chain) that signed the SSL server certificate used by Kibana
+## For now, make it the same as the cluster CA certificate. If it is different, copy the cert here.
+#kibana_signing_ca_crt: "{{ cluster_ca_crt }}"
+#
+## SSL server certificate used by Kibana to encrypt communication
+## For now, make it the same as the cluster instance certificate. If it is different, copy the cert here.
+#kibana_ssl_certificate: "{{ cluster_instance_crt }}"
+#
+## SSL server certificate private key used by Kibana to encrypt communication
+## For now, make it the same as the vaulted instance certificate key. If it is different, copy the key (preferably vaulted) here.
+#kibana_ssl_certificate_key: "{{ cluster_instance_cert_key }}"
 
 #### User and role management ####
 ## The following settings are used by the playbook to connect to Elasticsearch via the HTTP API in order to configure the builtin user passwords
@@ -159,6 +178,9 @@ es_users:
         - beats_system
     remote_monitoring_user:
       password: "{{ remote_monitoring_user_password }}"
+      roles:
+        - remote_monitoring_collector
+        - remote_monitoring_agent
     filebeat_publisher_user:
       password: "{{ filebeat_publisher_user_password }}"
       roles:

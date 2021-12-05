@@ -50,9 +50,7 @@
           LS_JAVA_OPTS: "{{logstash.java_opts}}"
           NO_PROXY: "{{no_proxy}}"
         volume:
-          - "{{ logstash_config }}/certs/ca.crt:/usr/share/logstash/certs/ca.crt:z"
-          - "{{ logstash_config }}/certs/ssl_cert.crt:/usr/share/logstash/certs/ssl_cert.crt:z"
-          - "{{ logstash_config }}/certs/ssl_cert.key:/usr/share/logstash/certs/ssl_cert.key:z"
+          - "{{ logstash_config }}/certs:/usr/share/logstash/certs:ro,z"
           - "{{ logstash_config }}/config/log4j2.properties:/usr/share/logstash/config/log4j2.properties:z"
           - "{{ logstash_config }}/config/logstash.yml:/usr/share/logstash/config/logstash.yml:z"
           - "{{ logstash_config }}/config/pipelines.yml:/usr/share/logstash/config/pipelines.yml:z"

@@ -1181,14 +1181,14 @@ output.elasticsearch:
   # production environments is strongly discouraged.
   # The default value is full.
   #ssl.verification_mode: full
-  ssl.verification_mode: certificate
+  ssl.verification_mode: "{{ xpack_http_ssl_verification_mode }}"
 
   # List of supported/valid TLS versions. By default all TLS versions from 1.1
   # up to 1.3 are enabled.
   #ssl.supported_protocols: [TLSv1.1, TLSv1.2, TLSv1.3]
 
   # List of root certificates for HTTPS server verifications
-  ssl.certificate_authorities: ["/usr/share/filebeat/config/ca.crt"]
+  ssl.certificate_authorities: ["/usr/share/filebeat/config/http_ca.crt"]
 
   # Certificate for SSL client authentication
   #ssl.certificate: "/etc/pki/client/cert.pem"
@@ -1942,10 +1942,7 @@ setup.kibana:
   # Scheme and port can be left out and will be set to the default (http and 5601)
   # In case you specify and additional path, the scheme is required: http://localhost:5601/path
   # IPv6 addresses should always be defined as: https://[2001:db8::1]:5601
-  host:
-{% for host in groups['kibana_hosts'] %}
-    - {{ hostvars[host]['service_ip'] }}:{{ kibana.ports[0] }}
-{% endfor %}
+  host: {{ hostvars[groups['kibana_hosts'][0]]['service_ip'] }}
 
   # Optional protocol and basic auth credentials.
   protocol: "https"
@@ -1977,7 +1974,7 @@ setup.kibana:
   # diagnostic mechanism when attempting to resolve TLS errors; its use in
   # production environments is strongly discouraged.
   # The default value is full.
-  ssl.verification_mode: certificate
+  ssl.verification_mode: "{{ xpack_http_ssl_verification_mode }}"
 
   # List of supported/valid TLS versions. By default all TLS versions from 1.1
   # up to 1.3 are enabled.
@@ -2027,7 +2024,7 @@ setup.kibana:
 #logging.selectors: [ ]
 
 # Send all logging output to stderr. The default is false.
-#logging.to_stderr: false
+logging.to_stderr: true
 
 # Send all logging output to syslog. The default is false.
 #logging.to_syslog: false
@@ -2046,7 +2043,7 @@ setup.kibana:
 
 # Logging to rotating files. Set logging.to_files to false to disable logging to
 # files.
-logging.to_files: true
+logging.to_files: false
 logging.files:
   # Configure the path where the logs are written. The default is the logs directory
   # under the home path (the binary location).

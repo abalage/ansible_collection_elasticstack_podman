@@ -7,12 +7,14 @@
     owner: "1000"
     group: "1000"
   loop:
-    - file: ca.crt
-      source: "{{ cluster_ca_crt }}"
+    - file: elastic_ca.crt
+      source: "{{ elasticsearch_ssl_ca }}"
     - file: kibana_signing_ca.crt
-      source: "{{ kibana_signing_ca_crt }}"
+      source: "{{ server_ssl_ca }}"
     - file: ssl.crt
-      source: "{{ kibana_ssl_certificate }}"
+      source: "{{ server_ssl_cert }}"
     - file: ssl.key
-      source: "{{ kibana_ssl_certificate_key }}"
+      source: "{{ server_ssl_key }}"
+    - file: ssl.p12
+      source: "{{ server_ssl_keystore }}"
   no_log: true

@@ -7,10 +7,10 @@
     owner: "1000"
     group: "1000"
   loop:
-    - file: ca.crt
-      source: "{{ cluster_ca_crt }}"
+    - file: http_ca.crt
+      source: "{{ xpack_http_ca }}"
     - file: ssl_cert.crt
-      source: "{{ logstash_ssl_cert}}"
+      source: "{{ logstash_server_ssl_cert }}"
     - file: ssl_cert.key
-      source: "{{ logstash_ssl_key }}"
+      source: "{{ logstash_server_ssl_key }}"
   no_log: true

@@ -72,4 +72,8 @@ logstash_pipelines:
       output_password: "{{logstash_internal_password}}"
       output_index: '%{[@metadata][beat]}-%{[@metadata][version]}'
 
-cluster_ca_crt: "{{ vault_cluster_ca_crt }}"
+xpack_http_ca: "{{ vault_xpack_http_ca }}"
+# logstash does not support pkcs12 but only pkcs8
+# perpared but not used yet, depends on pipeline configs
+logstash_server_ssl_cert: "{{ vault_logstash_server_ssl_cert | default('na') }}"
+logstash_server_ssl_key: "{{ vault_logstash_server_ssl_key | default('na') }}"
