@@ -116,11 +116,11 @@ These directories are the de facto locations for such purposes at least on RHEL 
 
 ### Example playbook
 
-You should find an example inventory in `[https://github.com/abalage/ansible_collection_elasticstack_podman/tree/main/example/playbook](examples/playbook)` directory of the repo.
+You should find an example inventory in [https://github.com/abalage/ansible_collection_elasticstack_podman/tree/main/example/playbook](examples/playbook) directory of the repo.
 
 ### Example inventory
 
-You should find an example inventory in `[https://github.com/abalage/ansible_collection_elasticstack_podman/tree/main/example/inventory](examples/inventory)` directory of the repo.
+You should find an example inventory in [https://github.com/abalage/ansible_collection_elasticstack_podman/tree/main/example/inventory](examples/inventory) directory of the repo.
 
 Regarding `host_vars`. Please be careful when you change the key names in the (Python) dicts of 'elastic', 'kibana', and so on. They will not be merged [when the variables are evaluated](https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable).
 
@@ -128,8 +128,8 @@ Regarding `host_vars`. Please be careful when you change the key names in the (P
 
 Normally the cluster_uuid would not be required as compoents with output.elasticsearch will find it out automatically, however there could be cases (ie. using a dedicated monitoring cluster) where this information is required.
 
-1. On first run the UUID will be generated automatically. Go to Stack Monitoring in Kibana and find the cluster_uuid in the url.
-2. Adjust the cluster_uuid in the inventory
+1. On first run the UUID will be generated automatically. Go to Stack Monitoring in Kibana and find the `cluster_uuid` in the url.
+2. Adjust the `cluster_uuid` in the inventory
 3. Run ansible-playbook again with ```--tags metricbeat --tags filebeat```
 
 ## Securing Elasticsearch cluster
