@@ -1,24 +1,5 @@
 # Ansible Collection for deploying Elasticsearch Stack by using podman pods and containers
 
-- [Ansible Collection for deploying Elasticsearch Stack by using podman pods and containers](#ansible-collection-for-deploying-elasticsearch-stack-by-using-podman-pods-and-containers)
-  * [About](#about)
-    + [Use case](#use-case)
-    + [Implemented components](#implemented-components)
-    + [Host-networking](#host-networking)
-    + [Scalability](#scalability)
-    + [Reverse proxy](#reverse-proxy)
-    + [Logstash pipelines](#logstash-pipelines)
-  * [Automatic startup of pods and container after host reboots](#automatic-startup-of-pods-and-container-after-host-reboots)
-    + [Migration after hosts are renamed](#migration-after-hosts-are-renamed)
-  * [Usage](#usage)
-    + [Persistent volumes](#persistent-volumes)
-    + [Example playbook](#example-playbook)
-    + [Example inventory](#example-inventory)
-    + [Getting the `cluster_uuid`](#getting-the--cluster-uuid-)
-  * [Securing Elasticsearch cluster](#securing-elasticsearch-cluster)
-  * [FAQ](#faq)
-  * [Known issues](#known-issues)
-
 ## About
 
 To read more about this collection, check this blog post. [https://balagetech.com/deploy-elasticsearch-stack-with-podman-and-ansible](https://balagetech.com/deploy-elasticsearch-stack-with-podman-and-ansible)
