@@ -1,0 +1,21 @@
+---
+
+ansible_remote_user: ansible
+# used by env_file in containers
+http_proxy: ''
+https_proxy: ''
+no_proxy: '127.0.0.1/8'
+
+firewalld_enabled: "yes"
+firewalld_zone: "internal"
+
+# used by ansible tasks
+proxy_env:
+  http_proxy: "{{ http_proxy }}"
+  https_proxy: "{{ https_proxy }}"
+  no_proxy: "{{ no_proxy }}"
+
+###### Containers ######
+# Leave these on default on CentOS 7
+container_conf_dir: "/var/srv/containers/config"
+container_data_dir: "/var/srv/containers/volume"

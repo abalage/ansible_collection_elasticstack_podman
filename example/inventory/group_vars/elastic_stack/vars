@@ -1,0 +1,42 @@
+---
+# Elastic stack version
+elk_version: "7.15.1"
+
+# Elasticsearch cluster name
+elastic_cluster_name: "example.com"
+
+# pod networking
+elastic_pod_network: "host"
+
+es_roles_custom:
+  native:
+    sng_writer:
+      cluster:
+        - monitor
+      indices:
+        - names: 'sng-logs-*'
+          privileges:
+            - manage
+            - write
+            - read
+    es_monitoring_user:
+      indices:
+        - names: 'metricbeat-*'
+          privileges:
+            - manage
+
+#https://github.com/elastic/elasticsearch/issues/65315
+
+es_users_custom:
+  native:
+    sng_writer:
+      password: "{{vault_sng_writer_password}}"
+      roles:
+        - sng_writer
+    es_monitoring_user:
+      password: "{{vault_es_monitoring_user_password}}"
+      roles:
+        - remote_monitoring_collector
+        - remote_monitoring_agent
+        - es_monitoring_user
+
