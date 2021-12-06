@@ -1,6 +1,9 @@
 # Ansible Collection for deploying Elasticsearch Stack by using podman pods and containers
 
 ## About
+
+To read more about this collection, check this blog post. [https://balagetech.com/deploy-elasticsearch-stack-with-podman-and-ansible](https://balagetech.com/deploy-elasticsearch-stack-with-podman-and-ansible)
+
 ### Use case
 I would like to have a production grade Elasticsearch cluster - with all of its additional components - deployed in containers in multiple hosts.
 
@@ -104,262 +107,30 @@ If you plan to rename hosts you should:
 
 ### Persistent volumes
 
-The persistent volumes of containers are located under two directories:
+The persistent volumes of containers are located under two directories by default:
 
 - /var/src/containers/volume/
 - /var/src/containers/config/
 
 These directories are the de facto locations for such purposes at least on RHEL systems and derivatives (SELinux contexts).
 
-Configuration files are generated from templates.
-
 ### Example playbook
 
-collections/requirements.yml
-```yml
----
-collections:
-  - containers.podman
-  - community.general
-  - abalage.elasticstack_podman
-```
+You should find an example inventory in `[https://github.com/abalage/ansible_collection_elasticstack_podman/tree/main/example/playbook](examples/playbook)` directory of the repo.
 
-playbook.yml
-```yml
----
-- hosts: all
-  remote_user: root
-  become: yes
-  become_method: sudo
-  collections:
-    - abalage.elasticstack_podman
+### Example inventory
 
-- name: Deploy Elasticsearch hosts
-  hosts: elastic_hosts
-  roles:
-    - name: abalage.elasticstack_podman.elasticsearch
-      tags:
-        - elasticsearch
-        - elk
+You should find an example inventory in `[https://github.com/abalage/ansible_collection_elasticstack_podman/tree/main/example/inventory](examples/inventory)` directory of the repo.
 
-- name: Deploy Kibana hosts
-  hosts: kibana_hosts
-  roles:
-    - name: abalage.elasticstack_podman.kibana
-      tags:
-        - kibana
-        - elk
+Regarding `host_vars`. Please be careful when you change the key names in the (Python) dicts of 'elastic', 'kibana', and so on. They will not be merged [when the variables are evaluated](https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable).
 
-- name: Deploy Filebeat hosts
-  hosts: filebeat_hosts
-  roles:
-    - name: abalage.elasticstack_podman.filebeat
-      tags:
-        - filebeat
-        - elk
-        - beats
+### Getting the `cluster_uuid`
 
-- name: Deploy Metricbeat hosts
-  hosts: metricbeat_hosts
-  roles:
-    - name: abalage.elasticstack_podman.metricbeat
-      tags:
-        - metricbeat
-        - elk
-        - beats
+Normally the cluster_uuid would not be required as compoents with output.elasticsearch will find it out automatically, however there could be cases (ie. using a dedicated monitoring cluster) where this information is required.
 
-- name: Deploy Logstash hosts
-  hosts: logstash_hosts
-  roles:
-    - name: abalage.elasticstack_podman.logstash
-      tags:
-        - logstash
-        - elk
-```
-
-### Example host inventory
-
-```ini
-[all]
-example.com    ansible_connection=local
-
-[all:vars]
-service_ip=0.0.0.0
-firewalld_zone="internal"
-timezone="Europe/Budapest"
-
-##### elastic stack #####
-[elastic_stack:vars]
-cluster_uuid='aaaaaabbbbbcccccc'
-
-[elastic_stack:children]
-elastic_hosts
-kibana_hosts
-metricbeat_hosts
-filebeat_hosts
-logstash_hosts
-
-[elastic_hosts:children]
-elastic_master_nodes
-elastic_ml_nodes
-
-[elastic_master_nodes]
-example.com
-
-[elastic_ml_nodes]
-
-[kibana_hosts]
-example.com
-
-[metricbeat_hosts]
-example.com
-
-[filebeat_hosts]
-example.com
-
-[logstash_hosts]
-example.com
-```
-
-### Getting the cluster_uuid
-
-FIXME
-
-### Filling up the inventory variables
-
-There are two place where you should change the default values
-
-#### Group vars: 'elastic_stack/vault'
-
-Here you should add the required certificates in PEM format and other secrets.
-Do not forget to encrypt it by ansible-vault.
-
-```yml
----
-vault_cluster_ca_crt: |
-    -----BEGIN CERTIFICATE-----
-    -----END CERTIFICATE-----
-
-vault_cluster_instance_crt: |
-    -----BEGIN CERTIFICATE-----
-    -----END CERTIFICATE-----
-
-vault_cluster_instance_cert_key: |
-    -----BEGIN RSA PRIVATE KEY-----
-    -----END RSA PRIVATE KEY-----
-
-vault_apm_system_password: ""
-vault_beats_system_password: ""
-vault_elastic_password: ""
-vault_filebeat_kibana_setup_user_password: ""
-vault_filebeat_publisher_user_password: ""
-vault_filebeat_setup_user_password: ""
-vault_kibana_system_password: ""
-vault_logstash_admin_password: ""
-vault_logstash_internal_password: ""
-vault_logstash_system_password: ""
-vault_logstash_user_password: ""
-vault_remote_monitoring_user_password: ""
-
-# es_users_custom
-vault_sng_writer_password: ""
-vault_es_monitoring_user_password: ""
-
-vault_kibana_fqdn: ""
-
-vault_kibana_security_encryptionkey: ""
-vault_kibana_savedobjects_encryptionkey: ""
-vault_kibana_reporting_encryptionkey: ""
-```
-
-#### Host vars
-
-Not all of these are required as long as the defaults are suitable for you.
-
-Please be careful when you change the key names in the (Python) dicts of 'elastic', 'kibana', and so on. They will not be merged [when the variables are evaluated](https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable).
-
-Also see [Limitations](#Limitations)
-
-```yaml
----
-elastic:
-  instance_name: "master01"
-  ip_address: 172.18.0.1
-  hostname: "{{inventory_hostname}}"
-  nodetype: es_master
-  ports:
-    - "9200"
-    - "9300"
-  deployment_type: "single-node"
-  noderoles:
-    - data
-    - master
-    - ingest
-    - transform
-    - remote_cluster_client
-  memory_limit: 6g
-  cpu_limit: 2
-  heap_size: "3g"
-  java_opts: "-Xms3g -Xmx3g"
-  rack_id: A1
-  server_room: B1
-
-kibana:
-  instance_name: "internal01"
-  ip_address: 0.0.0.0
-  java_opts: "-Xms1g -Xmx1g"
-  memory_limit: 2g
-  cpu_limit: 1
-  ports:
-    - "5601"
-
-metricbeat:
-  instance_name: "internal01"
-  ip_address: "0.0.0.0"
-  memory_limit: 1g
-  cpu_limit: 1
-  ports:
-    - "5066"
-    - "5067"
-  elastic_http_scheme: "{{es_api_scheme}}"
-  kibana_http_scheme: "https"
-  beat_http_scheme: "http"
-  logstash_http_scheme: "http"
-  certificate_validation: "none"
-  source_cluster_name: "{{elastic_cluster_name}}"
-  monitoring_cluster_url: "https://{{inventory_hostname}}:9200"
-  monitoring_read_user_name: "remote_monitoring_user"
-  monitoring_read_user_pass: "{{remote_monitoring_user_password}}"
-  monitoring_write_user_name: "remote_monitoring_user"
-  monitoring_write_user_pass: "{{remote_monitoring_user_password}}"
-
-logstash:
-  instance_name: "internal01"
-  ip_address: "0.0.0.0"
-  java_opts: "-Xms1g -Xmx1g"
-  memory_limit: 1g
-  cpu_limit: 1
-  xpack_management: false
-  api_port: "9600"
-  ports:
-    - "5045"
-    - "7500"
-    - "7501"
-    - "7502"
-    - "7503"
-    - "7504"
-    - "7505"
-    - "9600"
-    - "9601"
-
-filebeat:
-  instance_name: "internal01"
-  ip_address: "0.0.0.0"
-  memory_limit: 1g
-  cpu_limit: 1
-  ports:
-    - "5066"
-```
+1. On first run the UUID will be generated automatically. Go to Stack Monitoring in Kibana and find the cluster_uuid in the url.
+2. Adjust the cluster_uuid in the inventory
+3. Run ansible-playbook again with ```--tags metricbeat --tags filebeat```
 
 ## Securing Elasticsearch cluster
 
@@ -369,16 +140,23 @@ There is a multi layered security guide for Elasticsearch.
    This is already handled by the playbooks.
    Reference: https://www.elastic.co/guide/en/elasticsearch/reference/current/security-minimal-setup.html
 2. Configure TLS for transport layer. This is for traffic happening over TCP port 9300.
-   The playbooks handle these once you manually placed the certificates in PEM format into the inventory.
+   The playbooks handle these once you manually placed the certificates either in PKCS12 (preferred) or in PEM format into the inventory.
    Reference: https://www.elastic.co/guide/en/elasticsearch/reference/current/security-basic-setup.html
 3. Configure TLS for HTTP REST API traffic. This is for traffic happening over TCP port 9200.
    Most notable examples are Kibana and Beats.
-   This is not implemented yet by the playbooks. See [Limitations](#Limitations)
+   The playbooks handle these once you manually placed the certificates either in PKCS12 (preferred) or in PEM format into the inventory.
    Reference: https://www.elastic.co/guide/en/elasticsearch/reference/current/security-basic-setup-https.html
 
-### Howto create SSL certs
+To create these manually follow these steps.
 
-Follow the steps displayed on screen to create certificates in PEM format.
+```bash
+ $ mkdir -p /tmp/certs && podman run --rm -ti -v /tmp/certs/:/tmp/certs/ docker.elastic.co/elasticsearch/elasticsearch:7.15.1 bash
+ $ ./bin/elasticsearch-certutil ca
+ $ ./bin/elasticsearch-certutil cert --ca elastic-stack-ca.p12 --name example.com
+ $ ./bin/elasticsearch-certutil http
+ $ cp *.zip *.p12 /tmp/certs/
+ $ exit
+```
 
 ```bash
  $ mkdir -p /tmp/certs && podman run --rm -ti -v /tmp/certs/:/tmp/certs/ docker.elastic.co/elasticsearch/elasticsearch:7.15.1 bash
@@ -387,11 +165,12 @@ Follow the steps displayed on screen to create certificates in PEM format.
  $ ./bin/elasticsearch-certutil cert --pem --ca-key ca/ca.key --ca-cert ca/ca.crt --name example.com
  $ ./bin/elasticsearch-certutil http
  $ cp *.zip /tmp/certs/
-
+ $ exit
 ```
 
 Unpack the archives to access the certificates and keys.
 You should add the appropriate certificates and keys into the inventory in `group_vars/elastic_stack/vault`.
+Do not forget to use inline vaults. Especially in case you use Ansible Tower or AWX.
 
 ## FAQ
 
@@ -404,25 +183,17 @@ You should add the appropriate certificates and keys into the inventory in `grou
 3. Can I use my own container images?
    - Yes you can overwrite the necessary image references in the inventory.
 
-## Limitations
+## Known issues
 
 Some features are not planned, while othere are on the TODO list.
 
-- (not planned) No license management is implemented.
+- (todo) no ansible tests yet
+- (todo) no official docs/ yet
+- (todo) FQCN is not used everywhere where it should
 - (todo) There is no automated SSL certificate creation implemented. See [Howto create SSL certs](#howtossl) below.
-- (todo) Use separate certificates for HTTP REST traffic. Currently the same cert and key is used.
 - (todo) Stale or orphan systemd units are not cleaned up
 - (todo) Kibana uses the instance certificate and key for HTTPS. It is a security antipattern.
 - (todo) The whole dict (ie. `elastic`) needs to be copied into host_vars to overwrite it without breaking it. The `es_roles_custom` and `es_users_custom` dicts do already have a solution to that issue in elasticsearch/tasks/main.yml.
 - (todo) Place the credentials into keystores and do not leave them in plain text on the filesystem.
-
-## Development
-
-Should you want to adjust for example the configuraiton of a component, then have a look at the available options in the appropriate templates and defaults file.
-
-For example the default values of Elasticsearch can be found here: `~/.ansible/collections/ansible_collections/abalage/elasticstack_podman/roles/elasticsearch/defaults/main.yml`
-
-While the template which utilizes them can be found here: `~/.ansible/collections/ansible_collections/abalage/elasticstack_podman/roles/elasticsearch/templates/elasticsearch.yml.j2`
-
-In most cases it is enough to overwrite a variable's value in inventory.
-
+- (not planned) lack of AD integration
+- (not planned) No license management is implemented.
