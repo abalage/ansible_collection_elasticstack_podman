@@ -116,11 +116,11 @@ These directories are the de facto locations for such purposes at least on RHEL 
 
 ### Example playbook
 
-You should find an example inventory in [https://github.com/abalage/ansible_collection_elasticstack_podman/tree/main/example/playbook](examples/playbook) directory of the repo.
+You should find an example inventory in [example/playbook](example/playbook) directory.
 
 ### Example inventory
 
-You should find an example inventory in [https://github.com/abalage/ansible_collection_elasticstack_podman/tree/main/example/inventory](examples/inventory) directory of the repo.
+You should find an example inventory in [example/inventory](example/inventory) directory.
 
 Regarding `host_vars`. Please be careful when you change the key names in the (Python) dicts of 'elastic', 'kibana', and so on. They will not be merged [when the variables are evaluated](https://docs.ansible.com/ansible/latest/user_guide/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable).
 
