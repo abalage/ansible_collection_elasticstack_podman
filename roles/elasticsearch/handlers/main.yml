@@ -1,2 +1,4 @@
 ---
 # handlers file for elasticsearch
+- name: Reload sysctl
+  command: sysctl -p /etc/sysctl.d/elastic.conf
