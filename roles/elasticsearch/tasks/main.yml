@@ -23,7 +23,7 @@
 
 - name: Create roles and users
   tags: security
-  run_once: True
+  run_once: true
   when: not ansible_check_mode
   block:
     # https://www.middlewareinventory.com/blog/ansible-dict/#How_to_append_or_add_elements_into_ansible_dictionary
@@ -50,8 +50,8 @@
         url: "{{ es_api_uri }}/_cat/health"
         return_content: true
         validate_certs: "{{ es_validate_certs }}"
-        user: "{{es_api_basic_auth_username}}"
-        password: "{{es_api_basic_auth_password}}"
+        user: "{{ es_api_basic_auth_username }}"
+        password: "{{ es_api_basic_auth_password }}"
         force_basic_auth: yes
       register: response
       until: "'red' not in response.content and ((response.content.find('yellow') != -1) or (response.content.find('green') != -1))"

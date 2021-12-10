@@ -10,7 +10,7 @@
     - file: transport_ca.crt
       source: "{{ xpack_transport_ca }}"
     - file: instance.crt
-      source: "{{ xpack_transport_ssl_cert}}"
+      source: "{{ xpack_transport_ssl_cert }}"
     - file: instance.key
       source: "{{ xpack_transport_ssl_key }}"
     - file: instance.p12
@@ -18,7 +18,7 @@
     - file: http_ca.crt
       source: "{{ xpack_http_ca }}"
     - file: http.crt
-      source: "{{ xpack_http_ssl_cert}}"
+      source: "{{ xpack_http_ssl_cert }}"
     - file: http.key
       source: "{{ xpack_http_ssl_key }}"
     - file: http.p12

@@ -1,21 +1,21 @@
 ---
 - name: Deploy Elasticsearch in a pod
   vars:
-    pod_name: "{{ elastic_pod_name }}.{{inventory_hostname_short}}.es_{{ elastic.instance_name }}"
+    pod_name: "{{ elastic_pod_name }}.{{ inventory_hostname_short }}.es_{{ elastic.instance_name }}"
   block:
     - name: Create pod for elasticsearch
       containers.podman.podman_pod:
         name: "{{ pod_name }}"
-        hostname: "{{inventory_hostname_short}}.es_{{ elastic.instance_name }}"
+        hostname: "{{ inventory_hostname_short }}.es_{{ elastic.instance_name }}"
         state: "{{ state }}"
         recreate: "{{ recreate }}"
-        network: "{{elastic_pod_network}}"
+        network: "{{ elastic_pod_network }}"
       when: elastic_pod_network != "bridge"
 
     - name: Create pod for elasticsearch
       containers.podman.podman_pod:
         name: "{{ pod_name }}"
-        hostname: "{{inventory_hostname_short}}.es_{{ elastic.instance_name }}"
+        hostname: "{{ inventory_hostname_short }}.es_{{ elastic.instance_name }}"
         state: "{{ state }}"
         recreate: "{{ recreate }}"
         network: "{{ elastic_pod_network }}"
@@ -26,41 +26,40 @@
 
     - name: Run Elastic container
       podman_container:
-        name: "{{inventory_hostname_short}}.es_{{ elastic.instance_name }}"
+        name: "{{ inventory_hostname_short }}.es_{{ elastic.instance_name }}"
         pod: "{{ pod_name }}"
         image: "{{ elastic_image }}:{{ elastic_version }}"
         state: started
         stop_timeout: 90
         recreate: "{{ recreate }}"
-        network: "{{elastic_pod_network}}"
+        network: "{{ elastic_pod_network }}"
         ## by default log4j2.properties is used plus filebeat
-        ## log driver k8s-file
-        #log_driver: k8s-file
-        #log_opt:
-        #  path: "{{ elastic_data }}/logs/elasticsearch-container.log"
-        #  max_size: 300mb
-        ## log driver to journald (where syslog-ng can pick-up)
-        #log_driver: journald
-        #log_opt:
-        #  tag=elastic|{{ '{{' }}.ImageName{{ '}}' }}|podman
+        # log_driver: k8s-file
+        # log_opt:
+        #   path: "{{ elastic_data }}/logs/elasticsearch-container.log"
+        #   max_size: 300mb
+        # # log driver to journald (where syslog-ng can pick-up)
+        # log_driver: journald
+        # log_opt:
+        #   tag=elastic|{{ '{{' }}.ImageName{{ '}}' }}|podman
         label:
           process: elasticsearch
         ulimit:
           - "memlock=-1:-1"
         expose: "{{ elastic.ports }}"
-        memory: "{{elastic.memory_limit}}"
-        cpus: "{{elastic.cpu_limit}}"
+        memory: "{{ elastic.memory_limit }}"
+        cpus: "{{ elastic.cpu_limit }}"
         env:
-          TZ: "{{timezone}}"
-          ES_HEAP_SIZE: "{{elastic.heap_size}}"
-          ES_JAVA_OPTS: "{{elastic.java_opts}}"
-          ELASTIC_PASSWORD: "{{elastic_password}}"
-          HTTP_PROXY: "{{http_proxy}}"
-          HTTPS_PROXY: "{{https_proxy}}"
+          TZ: "{{ timezone }}"
+          ES_HEAP_SIZE: "{{ elastic.heap_size }}"
+          ES_JAVA_OPTS: "{{ elastic.java_opts }}"
+          ELASTIC_PASSWORD: "{{ elastic_password }}"
+          HTTP_PROXY: "{{ http_proxy }}"
+          HTTPS_PROXY: "{{ https_proxy }}"
         volume:
           - "{{ elastic_data }}/logs:/usr/share/elasticsearch/logs:z"
           - "{{ elastic_data }}/data:/usr/share/elasticsearch/data:z"
-          - "{{ elastic_data }}/snapshots:{{elastic_snapshot_repository}}"
+          - "{{ elastic_data }}/snapshots:{{ elastic_snapshot_repository }}"
           - "{{ elastic_config }}/config/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro,z"
           - "{{ elastic_config }}/config/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties:ro,z"
           - "{{ elastic_config }}/certs:/usr/share/elasticsearch/config/certificates:ro,z"
