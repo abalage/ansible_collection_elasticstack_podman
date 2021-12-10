@@ -13,8 +13,8 @@
       include_vars:
         file: "../../logstash/defaults/main.yml"
   tags:
-  - create_dirs
-  - includevars
+    - create_dirs
+    - includevars
 
 - name: Import createdirs
   include_tasks:

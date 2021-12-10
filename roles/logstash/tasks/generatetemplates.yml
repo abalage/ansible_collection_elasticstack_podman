@@ -19,7 +19,7 @@
     mode: "0644"
     owner: "1000"
     group: "1000"
-  when: item.enabled == True
+  when: item.enabled
   loop: "{{ logstash_pipelines }}"
 
 - name: Generate log4j2.properties for Logstash node
@@ -28,6 +28,4 @@
     dest: "{{ logstash_config }}/config/log4j2.properties"
     group: "1000"
     owner: "1000"
-
-
-
+    mode: "0644"

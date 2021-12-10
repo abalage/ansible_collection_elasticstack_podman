@@ -1,21 +1,21 @@
 ---
 - name: Deploy Filebeat in a pod
   vars:
-    pod_name: "{{ filebeat_pod_name }}.{{inventory_hostname_short}}.filebeat_{{ filebeat.instance_name }}"
+    pod_name: "{{ filebeat_pod_name }}.{{ inventory_hostname_short }}.filebeat_{{ filebeat.instance_name }}"
   block:
     - name: Create pod for filebeat
       containers.podman.podman_pod:
         name: "{{ pod_name }}"
-        hostname: "{{inventory_hostname_short}}.filebeat_{{ filebeat.instance_name }}"
+        hostname: "{{ inventory_hostname_short }}.filebeat_{{ filebeat.instance_name }}"
         state: "{{ state }}"
         recreate: "{{ recreate }}"
-        network: "{{filebeat_pod_network}}"
+        network: "{{ filebeat_pod_network }}"
       when: filebeat_pod_network != "bridge"
 
     - name: Create pod for filebeat
       containers.podman.podman_pod:
         name: "{{ pod_name }}"
-        hostname: "{{inventory_hostname_short}}.filebeat_{{ filebeat.instance_name }}"
+        hostname: "{{ inventory_hostname_short }}.filebeat_{{ filebeat.instance_name }}"
         state: "{{ state }}"
         recreate: "{{ recreate }}"
         network: "{{ filebeat_pod_network }}"
@@ -24,32 +24,32 @@
 
     - name: Run Filebeat-setup container to perform initial setup. It will exit when it's done.
       podman_container:
-        name: "{{inventory_hostname_short}}.filebeat_{{ filebeat.instance_name }}"
+        name: "{{ inventory_hostname_short }}.filebeat_{{ filebeat.instance_name }}"
         pod: "{{ pod_name }}"
         image: "{{ filebeat_image }}:{{ filebeat_version }}"
         command: setup -e --index-management --pipelines --dashboards
         state: "{{ state }}"
         user: root
         recreate: "{{ recreate }}"
-        network: "{{filebeat_pod_network}}"
-        ## by default json loggin is used plus filebeat
-        ## log driver k8s-file
-        #log_driver: k8s-file
-        #log_opt:
-        #  path: "{{ filebeat_data }}/logs/filebeat-container.log"
-        #  max_size: 300mb
-        ## log driver to journald (where syslog-ng can pick-up)
-        #log_driver: journald
-        #log_opt:
-        #  tag=filebeat|{{ '{{' }}.ImageName{{ '}}' }}|podman
+        network: "{{ filebeat_pod_network }}"
+        # # by default json loggin is used plus filebeat
+        # # log driver k8s-file
+        # log_driver: k8s-file
+        # log_opt:
+        #   path: "{{ filebeat_data }}/logs/filebeat-container.log"
+        #   max_size: 300mb
+        # # log driver to journald (where syslog-ng can pick-up)
+        # log_driver: journald
+        # log_opt:
+        #   tag=filebeat|{{ '{{' }}.ImageName{{ '}}' }}|podman
         label:
           process: filebeat-setup
-        expose: "{{filebeat.ports}}"
-        memory: "{{filebeat.memory_limit}}"
-        cpus: "{{filebeat.cpu_limit}}"
+        expose: "{{ filebeat.ports }}"
+        memory: "{{ filebeat.memory_limit }}"
+        cpus: "{{ filebeat.cpu_limit }}"
         env:
           TZ: "{{ timezone }}"
-          NO_PROXY: "{{no_proxy}}"
+          NO_PROXY: "{{ no_proxy }}"
         volume:
           - "{{ filebeat_config }}/certs/http_ca.crt:/usr/share/filebeat/config/http_ca.crt:ro,z"
           - "{{ filebeat_config }}/certs/kibana_signing_ca.crt:/usr/share/filebeat/config/kibana_signing_ca.crt:ro,z"
@@ -64,28 +64,28 @@
 
     - name: Run Filebeat container
       podman_container:
-        name: "{{inventory_hostname_short}}.filebeat_{{ filebeat.instance_name }}"
+        name: "{{ inventory_hostname_short }}.filebeat_{{ filebeat.instance_name }}"
         pod: "{{ pod_name }}"
         image: "{{ filebeat_image }}:{{ filebeat_version }}"
         state: "{{ state }}"
         user: root
         recreate: "{{ recreate }}"
-        network: "{{filebeat_pod_network}}"
-        ## by default json loggin is used plus filebeat
-        ## log driver k8s-file
-        #log_driver: k8s-file
-        #log_opt:
-        #  path: "{{ filebeat_data }}/logs/filebeat-container.log"
-        #  max_size: 300mb
-        ## log driver to journald (where syslog-ng can pick-up)
-        #log_driver: journald
-        #log_opt:
-        #  tag=filebeat|{{ '{{' }}.ImageName{{ '}}' }}|podman
+        network: "{{ filebeat_pod_network }}"
+        # # by default json loggin is used plus filebeat
+        # # log driver k8s-file
+        # log_driver: k8s-file
+        # log_opt:
+        #   path: "{{ filebeat_data }}/logs/filebeat-container.log"
+        #   max_size: 300mb
+        # # log driver to journald (where syslog-ng can pick-up)
+        # log_driver: journald
+        # log_opt:
+        #   tag=filebeat|{{ '{{' }}.ImageName{{ '}}' }}|podman
         label:
           process=filebeat
-        expose: "{{filebeat.ports}}"
-        memory: "{{filebeat.memory_limit}}"
-        cpus: "{{filebeat.cpu_limit}}"
+        expose: "{{ filebeat.ports }}"
+        memory: "{{ filebeat.memory_limit }}"
+        cpus: "{{ filebeat.cpu_limit }}"
         env:
           TZ: "{{ timezone }}"
         volume:

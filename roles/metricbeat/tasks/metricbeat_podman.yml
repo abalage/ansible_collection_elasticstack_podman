@@ -2,21 +2,21 @@
 # tasks file for metricbeat
 - name: Deploy Metricbeat in a pod
   vars:
-    pod_name: "{{ metricbeat_pod_name }}.{{inventory_hostname_short}}.metricbeat_{{ metricbeat.instance_name }}"
+    pod_name: "{{ metricbeat_pod_name }}.{{ inventory_hostname_short }}.metricbeat_{{ metricbeat.instance_name }}"
   block:
     - name: Create pod for metricbeat
       containers.podman.podman_pod:
         name: "{{ pod_name }}"
-        hostname: "{{inventory_hostname_short}}.metricbeat_{{ metricbeat.instance_name }}"
+        hostname: "{{ inventory_hostname_short }}.metricbeat_{{ metricbeat.instance_name }}"
         state: "{{ state }}"
         recreate: "{{ recreate }}"
-        network: "{{metricbeat_pod_network}}"
+        network: "{{ metricbeat_pod_network }}"
       when: metricbeat_pod_network != "bridge"
 
     - name: Create pod for metricbeat
       containers.podman.podman_pod:
         name: "{{ pod_name }}"
-        hostname: "{{inventory_hostname_short}}.metricbeat_{{ metricbeat.instance_name }}"
+        hostname: "{{ inventory_hostname_short }}.metricbeat_{{ metricbeat.instance_name }}"
         state: "{{ state }}"
         recreate: "{{ recreate }}"
         network: "{{ metricbeat_pod_network }}"
@@ -25,19 +25,19 @@
 
     - name: Run Metricbeat container - setup
       containers.podman.podman_container:
-        name: "{{inventory_hostname_short}}.metricbeat_{{ metricbeat.instance_name }}"
+        name: "{{ inventory_hostname_short }}.metricbeat_{{ metricbeat.instance_name }}"
         pod: "{{ pod_name }}"
-        image: "{{metricbeat_image}}:{{metricbeat_version}}"
+        image: "{{ metricbeat_image }}:{{ metricbeat_version }}"
         state: "{{ state }}"
         recreate: "{{ recreate }}"
-        network: "{{metricbeat_pod_network}}"
+        network: "{{ metricbeat_pod_network }}"
         label:
           process=metricbeat
-        memory: "{{metricbeat.memory_limit}}"
-        cpus: "{{metricbeat.cpu_limit}}"
+        memory: "{{ metricbeat.memory_limit }}"
+        cpus: "{{ metricbeat.cpu_limit }}"
         env:
           TZ: "{{ timezone }}"
-          ELASTICSEARCH_HOSTS: "{{metricbeat.monitoring_cluster_url}}"
+          ELASTICSEARCH_HOSTS: "{{ metricbeat.monitoring_cluster_url }}"
           ELASTICSEARCH_USERNAME: "{{ metricbeat.monitoring_write_user_name }}"
           ELASTICSEARCH_PASSWORD: "{{ metricbeat.monitoring_write_user_pass }}"
         volume:
@@ -53,22 +53,22 @@
 
     - name: Run Metricbeat container
       containers.podman.podman_container:
-        name: "{{inventory_hostname_short}}.metricbeat_{{ metricbeat.instance_name }}"
+        name: "{{ inventory_hostname_short }}.metricbeat_{{ metricbeat.instance_name }}"
         pod: "{{ pod_name }}"
-        image: "{{metricbeat_image}}:{{metricbeat_version}}"
+        image: "{{ metricbeat_image }}:{{ metricbeat_version }}"
         state: "{{ state }}"
         recreate: "{{ recreate }}"
-        network: "{{metricbeat_pod_network}}"
+        network: "{{ metricbeat_pod_network }}"
         label:
           process=metricbeat
         expose: "{{ metricbeat.ports }}"
-        memory: "{{metricbeat.memory_limit}}"
-        cpus: "{{metricbeat.cpu_limit}}"
+        memory: "{{ metricbeat.memory_limit }}"
+        cpus: "{{ metricbeat.cpu_limit }}"
         env:
           TZ: "{{ timezone }}"
-          ELASTICSEARCH_HOSTS: "{{metricbeat.monitoring_cluster_url}}"
-          ELASTICSEARCH_USERNAME: "{{metricbeat.monitoring_write_user_name}}"
-          ELASTICSEARCH_PASSWORD: "{{metricbeat.monitoring_write_user_pass}}"
+          ELASTICSEARCH_HOSTS: "{{ metricbeat.monitoring_cluster_url }}"
+          ELASTICSEARCH_USERNAME: "{{ metricbeat.monitoring_write_user_name }}"
+          ELASTICSEARCH_PASSWORD: "{{ metricbeat.monitoring_write_user_pass }}"
         user: root
         volume:
           - "{{ metricbeat_config }}/config/metricbeat.docker.yml:/usr/share/metricbeat/metricbeat.yml:z"
@@ -86,14 +86,14 @@
         immediate: yes
         state: enabled
         zone: "{{ firewalld_zone }}"
-      loop: "{{metricbeat.ports}}"
+      loop: "{{ metricbeat.ports }}"
       when:
         - metricbeat_pod_network == "host"
         - firewalld_enabled | bool
 
     - name: Hand over pod and container mgmt to systemd
       vars:
-        container_name: "{{pod_name}}"
+        container_name: "{{ pod_name }}"
         type: pod
       import_role:
         name: podman_systemd_simple

@@ -6,3 +6,4 @@
     dest: "{{ filebeat_config }}/config/filebeat.yml"
     group: "root"
     owner: "root"
+    mode: "0644"

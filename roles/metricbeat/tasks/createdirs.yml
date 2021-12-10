@@ -11,4 +11,4 @@
     - "{{ metricbeat_config }}/certs"
     - "{{ metricbeat_config }}/config"
   tags:
-  - create_dirs
+    - create_dirs

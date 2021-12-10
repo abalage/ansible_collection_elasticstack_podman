@@ -8,6 +8,6 @@
     group: "1000"
     mode: '0755'
   loop:
-    - "{{kibana_config}}/config"
-    - "{{kibana_config}}/certs"
-    - "{{kibana_data}}/logs"
+    - "{{ kibana_config }}/config"
+    - "{{ kibana_config }}/certs"
+    - "{{ kibana_data }}/logs"
