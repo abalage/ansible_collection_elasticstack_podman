@@ -1,6 +1,6 @@
 namespace: "abalage"
 name: "elasticstack_podman"
-version: "1.0.0"
+version: "1.0.2"
 readme: "README.md"
 authors:
     - "Balázs NÉMETH (https://balagetech.com)"
@@ -16,4 +16,5 @@ tags:
     - filebeat
     - logstash
     - collection
-repository: "https://www.github.com/abalage/ansible_collection_elasticstack_podman"
+repository: https://www.github.com/abalage/ansible_collection_elasticstack_podman
+issues: https://github.com/abalage/ansible_collection_elasticstack_podman/issues
