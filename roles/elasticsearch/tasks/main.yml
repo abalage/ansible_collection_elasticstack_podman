@@ -52,7 +52,7 @@
         validate_certs: "{{ es_validate_certs }}"
         user: "{{ es_api_basic_auth_username }}"
         password: "{{ es_api_basic_auth_password }}"
-        force_basic_auth: yes
+        force_basic_auth: true
       register: response
       until: "'red' not in response.content and ((response.content.find('yellow') != -1) or (response.content.find('green') != -1))"
       delay: 5

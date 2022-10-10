@@ -72,8 +72,8 @@
     - name: Open up firewalld ports
       firewalld:
         port: "{{ item }}/tcp"
-        permanent: yes
-        immediate: yes
+        permanent: true
+        immediate: true
         state: enabled
         zone: "{{ firewalld_zone }}"
       loop: "{{ elastic.ports }}"

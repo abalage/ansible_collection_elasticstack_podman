@@ -1,0 +1,15 @@
+---
+extends: default
+
+rules:
+  line-length:
+    max: 205
+    level: warning
+  document-start: disable
+#  comments-indentation: disable
+
+ignore: |
+  ansible_collections/
+  roles/geerlingguy.node_exporter/
+  roles/linux-system-roles.network/
+  roles/linux-system-roles.timesync/

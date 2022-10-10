@@ -1,9 +1,9 @@
 ---
 # defaults file for elasticsearch
 state: "started"
-recreate: "no"
+recreate: false
 firewalld_zone: "public"
-firewalld_enabledd: "no"
+firewalld_enabledd: false
 timezone: "Europe/Budapest"
 
 # persistent directories
@@ -35,7 +35,7 @@ elastic:
   ports:
     - "9200"
     - "9300"
-#  deployment_type: "single-node"
+  # deployment_type: "single-node"
   noderoles:
     - data
     - master
@@ -81,7 +81,7 @@ es_api_port: "{{ elastic.ports[0] }}"
 es_api_uri: "{{ es_api_scheme }}://{{ es_api_host }}:{{ es_api_port }}"
 es_api_sleep: 15
 es_security_api: "_security"
-es_validate_certs: no
+es_validate_certs: false
 es_api_basic_auth_username: "{{elastic_elastic_user}}"
 es_api_basic_auth_password: "{{elastic_password}}"
 es_delete_unmanaged_file: true

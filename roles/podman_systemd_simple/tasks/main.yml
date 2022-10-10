@@ -20,6 +20,6 @@
       ansible.builtin.systemd:
         name: "{{ service_unit }}"
         state: "{{ service_state }}"
-        daemon_reload: yes
+        daemon_reload: true
         enabled: "{{ service_enabled }}"
       when: stat_result.stat.exists
