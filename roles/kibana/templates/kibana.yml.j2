@@ -34,7 +34,9 @@ xpack.security.encryptionKey: "{{kibana_security_encryptionkey}}"
 xpack.encryptedSavedObjects.encryptionKey: '{{kibana_savedobjects_encryptionkey}}'
 xpack.reporting.encryptionKey: '{{kibana_reporting_encryptionkey}}'
 
+{%if kibana_version < "8.0.0" %}
 xpack.monitoring.enabled: true
+{% endif %}
 xpack.monitoring.kibana.collection.enabled: false # legacy
 
 # use Cgroup details
