@@ -1,6 +1,6 @@
 namespace: "abalage"
 name: "elasticstack_podman"
-version: "1.0.2"
+version: "1.0.3"
 readme: "README.md"
 authors:
     - "Balázs NÉMETH (https://balagetech.com)"
