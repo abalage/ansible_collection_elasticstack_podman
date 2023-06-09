@@ -29,7 +29,9 @@ elasticsearch.shardTimeout: 60000
 
 telemetry.enabled: false
 
+{%if kibana_version < "8.0.0" %}
 xpack.security.enabled: true
+{% endif %}
 xpack.security.encryptionKey: "{{kibana_security_encryptionkey}}"
 xpack.encryptedSavedObjects.encryptionKey: '{{kibana_savedobjects_encryptionkey}}'
 xpack.reporting.encryptionKey: '{{kibana_reporting_encryptionkey}}'
