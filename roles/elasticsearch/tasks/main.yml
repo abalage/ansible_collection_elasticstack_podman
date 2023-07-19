@@ -2,24 +2,24 @@
 # tasks file for elasticsearch
 
 - name: Include task sysctlsetup.yml
-  include_tasks: "sysctlsetup.yml"
+  ansible.builtin.include_tasks: "sysctlsetup.yml"
 
 - name: Import createdirs
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: "createdirs.yml"
     apply:
       tags: create_dirs
   tags: create_dirs
 
 - name: Include task generatetemplates.yml
-  include_tasks: "generatetemplates.yml"
+  ansible.builtin.include_tasks: "generatetemplates.yml"
 
 - name: Include task synccerts.yml
-  include_tasks: "synccerts.yml"
+  ansible.builtin.include_tasks: "synccerts.yml"
 
 # TODO rename this to podman_elasticsearch.yml
 - name: Include task elastic_stack_podman.yml
-  include_tasks: "elastic_stack_podman.yml"
+  ansible.builtin.include_tasks: "elastic_stack_podman.yml"
 
 - name: Create roles and users
   tags: security
@@ -28,17 +28,17 @@
   block:
     # https://www.middlewareinventory.com/blog/ansible-dict/#How_to_append_or_add_elements_into_ansible_dictionary
     - name: Include custom roles from inventory
-      set_fact:
+      ansible.builtin.set_fact:
         es_roles: "{{ es_roles | combine(es_roles_custom, recursive=True) }}"
       when: es_roles_custom is defined
 
     - name: Include custom users from inventory
-      set_fact:
+      ansible.builtin.set_fact:
         es_users: "{{ es_users | combine(es_users_custom, recursive=True) }}"
       when: es_users_custom is defined
 
     - name: Wait for Elasticsearch API to be available (timeout 300 sec)
-      wait_for:
+      ansible.builtin.wait_for:
         host: "{{ es_api_host }}"
         port: 9200
         delay: 30
@@ -46,7 +46,7 @@
         timeout: 300
 
     - name: Wait for cluster state to be YELLOW or GREEN (timeout 300 sec)
-      uri:
+      ansible.builtin.uri:
         url: "{{ es_api_uri }}/_cat/health"
         return_content: true
         validate_certs: "{{ es_validate_certs }}"
@@ -59,7 +59,7 @@
       retries: 60
 
     - name: Include task elasticsearch-security-native.yml
-      include_tasks:
+      ansible.builtin.include_tasks:
         file: "elasticsearch-security-native.yml"
         apply:
           tags: security

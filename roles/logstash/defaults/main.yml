@@ -11,21 +11,21 @@ logstash_pod_name: "logstash"
 logstash_pod_network: "host"
 
 # persistent directories
-logstash_config: "{{ container_conf_dir }}/{{inventory_hostname_short}}.logstash_{{logstash.instance_name}}"
-logstash_data: "{{ container_data_dir }}/{{inventory_hostname_short}}.logstash_{{logstash.instance_name}}"
+logstash_config: "{{ container_conf_dir }}/{{ inventory_hostname_short }}.logstash_{{ logstash.instance_name }}"
+logstash_data: "{{ container_data_dir }}/{{ inventory_hostname_short }}.logstash_{{ logstash.instance_name }}"
 
 # image tag and version
 logstash_image: "docker.elastic.co/logstash/logstash"
-logstash_version: "{{ elk_version | default(7.14.1)}}"
+logstash_version: "{{ elk_version | default(7.14.1) }}"
 
 # logstash_admin_user is for centralized pipeline management: xpack.management.elasticsearch.username
 # logstash_internal is for ingesting logs to Elasticsearch output
 # logstash_system user is for storing monitoring information in Elasticsearch.
 # logstash_user is for read only access to logstash indices
-logstash_admin_password: "{{vault_logstash_admin_password | default(changeMe)}}"
-logstash_internal_password: "{{vault_logstash_internal_password | default(changeMe)}}"
-logstash_system_password: "{{vault_logstash_system_password | default(changeMe)}}"
-logstash_user_password: "{{vault_logstash_user_password | default(changeMe)}}"
+logstash_admin_password: "{{ vault_logstash_admin_password | default(changeMe) }}"
+logstash_internal_password: "{{ vault_logstash_internal_password | default(changeMe) }}"
+logstash_system_password: "{{ vault_logstash_system_password | default(changeMe) }}"
+logstash_user_password: "{{ vault_logstash_user_password | default(changeMe) }}"
 
 # should be a separate cert than instance key but we're lazy now
 logstash_ssl_cert: "{{ vault_cluster_instance_crt }}"
@@ -60,7 +60,7 @@ logstash_pipelines:
     input_port: "7500"
     pipeline_workers: "1"
     output_user: logstash_internal
-    output_password: "{{logstash_internal_password}}"
+    output_password: "{{ logstash_internal_password }}"
     output_index: "arcsight-%{+YYYY.MM.dd}"
   - name: beats
     type: beats
@@ -69,7 +69,7 @@ logstash_pipelines:
     input_port: "5045"
     pipeline_workers: "1"
     output_user: logstash_internal
-    output_password: "{{logstash_internal_password}}"
+    output_password: "{{ logstash_internal_password }}"
     output_index: '%{[@metadata][beat]}-%{[@metadata][version]}'
 
 xpack_http_ca: "{{ vault_xpack_http_ca }}"

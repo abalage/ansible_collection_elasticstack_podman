@@ -1,6 +1,6 @@
 ---
 - name: Copy the certificate used to issue the Elasticsearch node certificates to Kibana servers
-  copy:
+  ansible.builtin.copy:
     content: "{{ item.source }}"
     dest: "{{ kibana_config }}/certs/{{ item.file }}"
     mode: "0440"

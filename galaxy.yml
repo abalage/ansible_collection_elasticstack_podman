@@ -1,6 +1,7 @@
 namespace: "abalage"
 name: "elasticstack_podman"
-version: "1.0.3"
+description: "Deploying Elasticsearch Stack by using podman pods and containers"
+version: "1.0.5"
 readme: "README.md"
 authors:
     - "Balázs NÉMETH (https://balagetech.com)"
@@ -15,6 +16,6 @@ tags:
     - metricbeat
     - filebeat
     - logstash
-    - collection
+    - monitoring
 repository: https://www.github.com/abalage/ansible_collection_elasticstack_podman
 issues: https://github.com/abalage/ansible_collection_elasticstack_podman/issues

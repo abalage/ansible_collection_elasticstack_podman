@@ -1,7 +1,7 @@
 ---
 
 - name: Copy the certificates for Metricbeat
-  copy:
+  ansible.builtin.copy:
     content: "{{ item.source }}"
     dest: "{{ metricbeat_config }}/certs/{{ item.file }}"
     mode: "0440"

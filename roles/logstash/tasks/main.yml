@@ -1,17 +1,17 @@
 ---
 
 - name: Import createdirs
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: "createdirs.yml"
     apply:
       tags: create_dirs
   tags: create_dirs
 
 - name: Include generatetemplates
-  include_tasks: "generatetemplates.yml"
+  ansible.builtin.include_tasks: "generatetemplates.yml"
 
 - name: Include synccerts
-  include_tasks: "synccerts.yml"
+  ansible.builtin.include_tasks: "synccerts.yml"
 
 - name: Include logstash_podman
-  include_tasks: "logstash_podman.yml"
+  ansible.builtin.include_tasks: "logstash_podman.yml"

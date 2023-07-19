@@ -1,7 +1,7 @@
 ---
 
 - name: "Generating metricbeat config and placing into config directory"
-  template:
+  ansible.builtin.template:
     src: "{{ item }}.j2"
     dest: "{{ metricbeat_config }}/config/{{ item }}"
     mode: "0644"
