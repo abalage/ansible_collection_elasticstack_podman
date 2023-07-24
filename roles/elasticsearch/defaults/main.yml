@@ -6,6 +6,10 @@ firewalld_zone: "public"
 firewalld_enabledd: false
 timezone: "Europe/Budapest"
 
+# defaults for created directories and files
+owner_uid: "1000"
+group_uid: "1000"
+
 # persistent directories
 elastic_config: "{{ container_conf_dir }}/{{ inventory_hostname_short }}.es_{{ elastic.instance_name }}"
 elastic_data: "{{ container_data_dir }}/{{ inventory_hostname_short }}.es_{{ elastic.instance_name }}"
