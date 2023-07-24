@@ -3,8 +3,8 @@
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
-    owner: "1000"
-    group: "1000"
+    owner: "{{ owner_uid }}"
+    group: "{{ group_uid }}"
     mode: '0755'
   loop:
     - "{{ logstash_data }}/data"

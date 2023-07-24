@@ -4,8 +4,8 @@
     src: "{{ item.source }}"
     dest: "{{ logstash_config }}/{{ item.file }}"
     mode: "0644"
-    owner: "1000"
-    group: "1000"
+    owner: "{{ owner_uid }}"
+    group: "{{ group_uid }}"
   loop:
     - file: "config/logstash.yml"
       source: "logstash.yml.j2"
@@ -17,8 +17,8 @@
     src: "{{ item.type }}.conf.j2"
     dest: "{{ logstash_config }}/pipelines/{{ item.name }}_{{ item.id }}.conf"
     mode: "0644"
-    owner: "1000"
-    group: "1000"
+    owner: "{{ owner_uid }}"
+    group: "{{ group_uid }}"
   when: item.enabled
   loop: "{{ logstash_pipelines }}"
 
@@ -26,6 +26,6 @@
   ansible.builtin.copy:
     src: "log4j2.properties"
     dest: "{{ logstash_config }}/config/log4j2.properties"
-    group: "1000"
-    owner: "1000"
+    group: "{{ group_uid }}"
+    owner: "{{ owner_uid }}"
     mode: "0644"
