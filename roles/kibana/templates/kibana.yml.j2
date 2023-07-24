@@ -22,7 +22,7 @@ elasticsearch.hosts:
 elasticsearch.ssl.certificateAuthorities: ["/usr/share/kibana/config/certs/elastic_ca.crt"]
 elasticsearch.ssl.verificationMode: "{{ elasticsearch_ssl_verification_mode }}"
 elasticsearch.username: kibana_system
-elasticsearch.password: {{ kibana_system_password }}
+elasticsearch.password: "{{ kibana_system_password }}"
 # millisec
 elasticsearch.requestTimeout: 120000
 elasticsearch.shardTimeout: 60000
