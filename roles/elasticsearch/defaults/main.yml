@@ -7,8 +7,8 @@ firewalld_enabledd: false
 timezone: "Europe/Budapest"
 
 # persistent directories
-elastic_config: "{{ container_conf_dir }}/{{inventory_hostname_short}}.es_{{elastic.instance_name}}"
-elastic_data: "{{ container_data_dir }}/{{inventory_hostname_short}}.es_{{elastic.instance_name}}"
+elastic_config: "{{ container_conf_dir }}/{{ inventory_hostname_short }}.es_{{ elastic.instance_name }}"
+elastic_data: "{{ container_data_dir }}/{{ inventory_hostname_short }}.es_{{ elastic.instance_name }}"
 elastic_snapshot_repository: "/mnt/snapshot-repository"
 elastic_snapshot_enabled: false
 
@@ -18,7 +18,7 @@ elastic_pod_network: "host"
 
 # container defaults
 elastic_image: "docker.elastic.co/elasticsearch/elasticsearch"
-elastic_version: "{{ elk_version | default('7.14.1')}}"
+elastic_version: "{{ elk_version | default('7.14.1') }}"
 
 # cluster settings
 elastic_cluster_name: "example.com"
@@ -82,8 +82,8 @@ es_api_uri: "{{ es_api_scheme }}://{{ es_api_host }}:{{ es_api_port }}"
 es_api_sleep: 15
 es_security_api: "_security"
 es_validate_certs: false
-es_api_basic_auth_username: "{{elastic_elastic_user}}"
-es_api_basic_auth_password: "{{elastic_password}}"
+es_api_basic_auth_username: "{{ elastic_elastic_user }}"
+es_api_basic_auth_password: "{{ elastic_password }}"
 es_delete_unmanaged_file: true
 es_delete_unmanaged_native: true
 

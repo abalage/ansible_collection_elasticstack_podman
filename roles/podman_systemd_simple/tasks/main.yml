@@ -7,7 +7,7 @@
     service_unit: "{{ prefix }}-{{ container_name }}.service"
   block:
     - name: Generate systemd units by podman
-      command:
+      ansible.builtin.command:
         cmd: podman generate systemd -f -n -t "{{ container_stop_timeout }}" "{{ container_name }}"
         chdir: "{{ service_files_dir }}"
 

@@ -1,6 +1,6 @@
 ---
 - name: Adding sysctl config
-  template:
+  ansible.builtin.template:
     src: "sysctl.j2"
     dest: "/etc/sysctl.d/elastic.conf"
     owner: root

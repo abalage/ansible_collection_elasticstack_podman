@@ -1,6 +1,6 @@
 ---
 - name: Create persistent directories for Filebeat
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     owner: "1000"
@@ -11,8 +11,8 @@
     - "{{ filebeat_config }}/certs"
     - "{{ filebeat_config }}/config"
 
-- name: create placeholder directories for monitored components
-  file:
+- name: Create placeholder directories for monitored components
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     owner: "root"

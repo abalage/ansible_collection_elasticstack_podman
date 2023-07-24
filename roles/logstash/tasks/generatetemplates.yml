@@ -1,6 +1,6 @@
 ---
 - name: Generate the configuration files of Logstash from templates
-  template:
+  ansible.builtin.template:
     src: "{{ item.source }}"
     dest: "{{ logstash_config }}/{{ item.file }}"
     mode: "0644"
@@ -13,7 +13,7 @@
       source: "pipelines.yml.j2"
 
 - name: Generate pipeline configs
-  template:
+  ansible.builtin.template:
     src: "{{ item.type }}.conf.j2"
     dest: "{{ logstash_config }}/pipelines/{{ item.name }}_{{ item.id }}.conf"
     mode: "0644"
@@ -23,7 +23,7 @@
   loop: "{{ logstash_pipelines }}"
 
 - name: Generate log4j2.properties for Logstash node
-  copy:
+  ansible.builtin.copy:
     src: "log4j2.properties"
     dest: "{{ logstash_config }}/config/log4j2.properties"
     group: "1000"

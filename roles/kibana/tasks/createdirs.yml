@@ -1,7 +1,7 @@
 ---
 
 - name: Create persistent directories for Kibana
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     owner: "1000"

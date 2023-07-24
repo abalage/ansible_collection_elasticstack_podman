@@ -1,6 +1,6 @@
 ---
 - name: Copy the X.509 certificates for transport and http security
-  copy:
+  ansible.builtin.copy:
     content: "{{ item.source }}"
     dest: "{{ elastic_config }}/certs/{{ item.file }}"
     mode: "0440"

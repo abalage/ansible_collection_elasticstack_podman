@@ -1,17 +1,22 @@
 ---
-- hosts: all
+- name: Play for installing the whole stack
+  hosts: all
   remote_user: "{{ansible_remote_user}}"
   become: true
-  become_method: sudo
-  collections:
-    - abalage.elasticstack_podman
+  become_method: ansible.builtin.sudo
+  roles:
+    - role: abalage.elasticstack_podman.elasticsearch
+    - role: abalage.elasticstack_podman.kibana
+    - role: abalage.elasticstack_podman.filebeat
+    - role: abalage.elasticstack_podman.metricbeat
+    - role: abalage.elasticstack_podman.logstash
 
 - name: Deploy Elasticsearch hosts
   hosts: elastic_hosts
   become: true
-  become_method: sudo
+  become_method: ansible.builtin.sudo
   roles:
-    - name: abalage.elasticstack_podman.elasticsearch
+    - role: abalage.elasticstack_podman.elasticsearch
       tags:
         - elasticsearch
         - elk
@@ -19,9 +24,9 @@
 - name: Deploy Kibana hosts
   hosts: kibana_hosts
   become: true
-  become_method: sudo
+  become_method: ansible.builtin.sudo
   roles:
-    - name: abalage.elasticstack_podman.kibana
+    - role: abalage.elasticstack_podman.kibana
       tags:
         - kibana
         - elk
@@ -29,9 +34,9 @@
 - name: Deploy Filebeat hosts
   hosts: filebeat_hosts
   become: true
-  become_method: sudo
+  become_method: ansible.builtin.sudo
   roles:
-    - name: abalage.elasticstack_podman.filebeat
+    - role: abalage.elasticstack_podman.filebeat
       tags:
         - filebeat
         - elk
@@ -40,9 +45,9 @@
 - name: Deploy Metricbeat hosts
   hosts: metricbeat_hosts
   become: true
-  become_method: sudo
+  become_method: ansible.builtin.sudo
   roles:
-    - name: abalage.elasticstack_podman.metricbeat
+    - role: abalage.elasticstack_podman.metricbeat
       tags:
         - metricbeat
         - elk
@@ -51,9 +56,9 @@
 - name: Deploy Logstash hosts
   hosts: logstash_hosts
   become: true
-  become_method: sudo
+  become_method: ansible.builtin.sudo
   roles:
-    - name: abalage.elasticstack_podman.logstash
+    - role: abalage.elasticstack_podman.logstash
       tags:
         - logstash
         - elk

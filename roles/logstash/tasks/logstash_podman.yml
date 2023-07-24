@@ -23,7 +23,7 @@
       when: logstash_pod_network == "bridge"
 
     - name: Run Logstash container
-      podman_container:
+      containers.podman.podman_container:
         name: "{{ inventory_hostname_short }}.logstash_{{ logstash.instance_name }}"
         pod: "{{ pod_name }}"
         image: "{{ logstash_image }}:{{ logstash_version }}"
@@ -64,7 +64,7 @@
       environment: "{{ proxy_env }}"
 
     - name: Open up firewalld ports
-      firewalld:
+      ansible.posix.firewalld:
         port: "{{ item }}/tcp"
         permanent: true
         immediate: true
@@ -80,5 +80,5 @@
       vars:
         container_name: "{{ pod_name }}"
         type: pod
-      import_role:
+      ansible.builtin.import_role:
         name: podman_systemd_simple

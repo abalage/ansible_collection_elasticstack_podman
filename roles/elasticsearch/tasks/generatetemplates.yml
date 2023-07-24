@@ -2,7 +2,7 @@
 
 # FIXME check owner and group
 - name: Generate elasticsearch.yml for node
-  template:
+  ansible.builtin.template:
     src: "{{ item }}.j2"
     dest: "{{ elastic_config }}/config/{{ item }}"
     mode: "0644"
@@ -12,7 +12,7 @@
     - elasticsearch.yml
 
 - name: "Place elasticsearch logging config into the config directory"
-  copy:
+  ansible.builtin.copy:
     src: "{{ item }}"
     dest: "{{ elastic_config }}/config/{{ item }}"
     mode: "0644"

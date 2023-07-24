@@ -1,34 +1,34 @@
 ---
 # tasks file for metricbeat
 - name: Fetch variables from other roles
-  block:
-    - name: Include vars from Elastic
-      include_vars:
-        file: "../../elasticsearch/defaults/main.yml"
-
-    - name: Include vars from Kibana
-      include_vars:
-        file: "../../kibana/defaults/main.yml"
-
-    - name: Include vars from Logstash
-      include_vars:
-        file: "../../logstash/defaults/main.yml"
   tags:
     - create_dirs
     - includevars
+  block:
+    - name: Include vars from Elastic
+      ansible.builtin.include_vars:
+        file: "../../elasticsearch/defaults/main.yml"
+
+    - name: Include vars from Kibana
+      ansible.builtin.include_vars:
+        file: "../../kibana/defaults/main.yml"
+
+    - name: Include vars from Logstash
+      ansible.builtin.include_vars:
+        file: "../../logstash/defaults/main.yml"
 
 - name: Import createdirs
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: "createdirs.yml"
     apply:
       tags: create_dirs
   tags: create_dirs
 
 - name: Import generatetemplates
-  include_tasks: "generatetemplates.yml"
+  ansible.builtin.include_tasks: "generatetemplates.yml"
 
 - name: Import synccerts
-  include_tasks: "synccerts.yml"
+  ansible.builtin.include_tasks: "synccerts.yml"
 
 - name: Import metricbeat_podman
-  include_tasks: "metricbeat_podman.yml"
+  ansible.builtin.include_tasks: "metricbeat_podman.yml"

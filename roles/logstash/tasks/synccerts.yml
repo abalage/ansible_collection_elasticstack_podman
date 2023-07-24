@@ -1,6 +1,6 @@
 ---
 - name: Copy certificates to Logstash servers
-  copy:
+  ansible.builtin.copy:
     content: "{{ item.source }}"
     dest: "{{ logstash_config }}/certs/{{ item.file }}"
     mode: "0440"

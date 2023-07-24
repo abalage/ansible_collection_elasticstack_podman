@@ -1,6 +1,6 @@
 ---
 - name: Copy the certificate for Filebeat
-  copy:
+  ansible.builtin.copy:
     content: "{{ item.source }}"
     dest: "{{ filebeat_config }}/certs/{{ item.file }}"
     mode: "0440"

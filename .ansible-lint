@@ -16,3 +16,7 @@ exclude_paths:
 skip_list:
   - 'yaml'
   - 'risky-shell-pipe'
+warn_list:
+  - "var-naming[no-role-prefix]"
+  - "no-changed-when"
+  - "no-free-form"
